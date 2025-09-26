@@ -430,7 +430,7 @@ export const Homepage = () => {
                     </div>
                 </div>
             </div>            {/* Bottom Row - Newsletter Section */}
-            <div className="bg-[#fefff2] rounded-none py-12">
+            <div className="hidden bg-[#fefff2] rounded-none py-12">
                 <div className="max-w-none">
                     <div className="flex flex-col lg:flex-row items-center lg:items-center gap-40 justify-center ">
                         <div className="">
