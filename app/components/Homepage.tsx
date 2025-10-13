@@ -2,6 +2,8 @@
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import Footer from "./Footer";
+import Navbar from "./Navbar";
+import Link from "next/link";
 
 interface SlideItem {
     image: string;
@@ -37,7 +39,7 @@ const newArrivals: ProductItem[] = [
         name: "TechSilk™ Evo 9\" Half Tights",
         price: "170 EUR",
         colors: ["#2D2D2D"],
-        front: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870789/product-image-removebg-preview_s0awsc.png",
+        front: "https://satisfyrunning.com/cdn/shop/files/11006-AB-OA_MothTech-t-shirt_aged-black_back.jpg?v=1750081078&width=533",
         back: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870992/product-image2_uu4zsl.png",
     },
     {
@@ -95,50 +97,13 @@ export const Homepage = () => {
     }, []);
 
     return (
-        <div className="relative w-full">
-            <div className="bg-black text-white  text-center py-1 text-xs font-medium tracking-wider w-full">
+        <div className="bg-white w-full">
+            <div className="bg-black text-white text-center py-1 text-xs font-medium tracking-wider w-full">
                 FREE SHIPPING. FREE RETURNS.
             </div>
 
-            <nav className="absolute  left-0 right-0 z-10">
-                <div className="flex items-center py-4 px-8 md:px-12">
-                    <div className="flex items-center space-x-12">
-                        <div className="flex items-center space-x-1 cursor-pointer select-none">
-                            <Image
-                                src="/whiteheart-logo-v1.png"
-                                alt="Whiteheart Logo"
-                                width={120}
-                                height={60}
-                                priority
-                                className="h-12 w-auto brightness-110 contrast-125 drop-shadow-md"
-                            />
-                            <div className="font-dancing m-0 p-0 text-xl font-bold flex flex-col leading-none">
-                                <h1 className="">White</h1>
-                                <h1 className="">Heart</h1>
-                            </div>
-
-                        </div>
-
-                        <div className="hidden ml-7 md:flex space-x-6 text-white">
-                            <a href="#" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Shop link" tabIndex={0}>SHOP</a>
-                            <a href="#" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Magazine link" tabIndex={0}>MAGAZINE</a>
-                            <a href="#" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Customer service link" tabIndex={0}>CUSTOMER SERVICE</a>
-                        </div>
-                    </div>
-                    <div className="ml-auto flex items-center space-x-6 text-white">
-                        <span className="font-simon text-sm tracking-wide">EN</span>
-                        <button aria-label="Search" tabIndex={0} className="hover:opacity-70 transition-opacity">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M5 10.6667C5 7.53705 7.53705 5 10.6667 5C13.7963 5 16.3333 7.53705 16.3333 10.6667C16.3333 12.1891 15.7329 13.5713 14.756 14.5895C14.7255 14.6136 14.6961 14.6397 14.6679 14.6679C14.6397 14.6961 14.6136 14.7255 14.5895 14.756C13.5713 15.7329 12.1891 16.3333 10.6667 16.3333C7.53705 16.3333 5 13.7963 5 10.6667ZM15.3347 16.7489C14.0419 17.7426 12.4233 18.3333 10.6667 18.3333C6.43248 18.3333 3 14.9009 3 10.6667C3 6.43248 6.43248 3 10.6667 3C14.9009 3 18.3333 6.43248 18.3333 10.6667C18.3333 12.4233 17.7426 14.0419 16.7489 15.3347L19.7071 18.2929C20.0976 18.6834 20.0976 19.3166 19.7071 19.7071C19.3166 20.0976 18.6834 20.0976 18.2929 19.7071L15.3347 16.7489Z" fill="currentColor"></path></svg>
-                        </button>
-                        <button aria-label="Account" tabIndex={0} className="hover:opacity-70 transition-opacity">
-                            <svg width="20" height="20" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M12.8036 4.44737C12.8036 2.40537 11.1482 0.75 9.10621 0.75C7.06421 0.75 5.40884 2.40537 5.40884 4.44737C5.40884 6.48937 7.06421 8.14474 9.10621 8.14474C11.1482 8.14474 12.8036 6.48937 12.8036 4.44737ZM0.760742 14.9233C0.760742 12.2311 2.90073 9.96712 5.63986 9.96712H12.5724C15.3116 9.96712 17.4515 12.2311 17.4515 14.9233V16.4638C17.4515 17.4994 16.6121 18.3388 15.5765 18.3388H2.63574C1.60021 18.3388 0.760742 17.4994 0.760742 16.4638V14.9233Z" fill="currentColor"></path></svg>
-                        </button>
-                        <button aria-label="Cart" tabIndex={0} className="relative focus:outline-none hover:opacity-70 transition-opacity">
-                            <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.5 20.6744H5.5L6.5 7.6446H9V6.6423C9 4.83818 10.37 3.36481 12.12 3.17438C12.07 3.50513 12.04 3.84591 12.02 4.18669C10.87 4.4072 10 5.41951 10 6.6423V7.6446H12.46C13.44 10.7617 15.89 13.2274 19 14.1996L19.5 20.6744Z" fill="currentColor"></path></svg>
-                            <span className="absolute -top-1 -right-1 bg-white text-black rounded-full h-3 w-3 flex items-center justify-center text-[8px] font-bold">0</span>
-                        </button>
-                    </div>
-                </div>
+            <nav className="absolute left-0 right-0 z-10">
+                <Navbar transparent={true} />
             </nav>
 
             <div className="relative h-[80vh] w-full overflow-hidden">
@@ -172,17 +137,17 @@ export const Homepage = () => {
                 </button>
             </div>
 
-            <div className="relative bg-white w-full h-[75vh] flex justify-between content-between flex-col">
+            <div className="relative bg-white w-full flex justify-between content-between flex-col">
                 <div className="flex-1 flex flex-col w-full pt-10 pb-4">
-                    <div className="text-center mb-8 shrink-0">
+                    <div className="text-center shrink-0">
                         <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight">New Arrivals</h2>
                     </div>
                     <div className="relative  min-h-0 ">
-                        <div className="overflow-x-auto h-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                        <div className="overflow-x-auto h-full w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
                             <div className="flex items-start gap-8 h-full pb-2" style={{ minWidth: "max-content" }}>
                                 {newArrivals.map((product) => (
-                                    <div key={product.id} className="flex-shrink-0 w-64 group  cursor-pointer select-none">
-                                        <div className="relative  aspect-[3/4]">
+                                    <Link key={product.id} href={`/product/${product.id}`} className="flex-shrink-0 w-56 md:w-72 group cursor-pointer select-none">
+                                        <div className="relative  aspect-[4/4] md:aspect-[4/4]">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={product.front} alt={product.name} className="w-full h-full object-contain transition-opacity duration-300 group-hover:opacity-0" />
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -197,19 +162,19 @@ export const Homepage = () => {
                                                 ))}
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
                     </div>
                     <div className="text-center mt-9 shrink-0">
-                        <button className="bg-black text-white rounded font-walter font-bold uppercase tracking-wider px-4 py-2 hover:bg-gray-800 transition-colors duration-200 text-xs md:text-xs" aria-label="View all new arrivals">View All</button>
+                        <button className="bg-black text-white rounded font-walter font-bold uppercase tracking-wider px-5 py-3 hover:bg-gray-800 transition-colors duration-200 text-xs md:text-xs" aria-label="View all new arrivals">View All</button>
                     </div>
                 </div>
             </div>
 
-            <div className="relative py-16 bg-white w-full">
-                <div className="mx-auto px-8">
+            <div className="relative py-10 bg-white w-full">
+                <div className="mx-auto px-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto">
                         {[
                             { title: "Tops", subtitle: "FOR THOSE WHO RUN TO FEEL FREE", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_5_720x.progressive.jpg" },
@@ -234,40 +199,43 @@ export const Homepage = () => {
             </div>
 
             <div className="relative  bg-white w-full">
-                <div className="w-full">
-                    <div className="text-center mb-20">
-                        <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight">Shop the Silhouette</h2>
-                    </div>
-                    <div className="hidden md:block">
-                        <div className="grid grid-cols-4 gap-12 mx-auto px-8">
-                            {["https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png"].map((img, idx) => (
-                                <div key={idx} className="group cursor-pointer">
-                                    <div className="relative overflow-hidden bg-white">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={img} alt={`Silhouette product ${idx + 1}`} className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="md:hidden">
-                        <div className="overflow-x-auto px-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                            <div className="flex gap-6 pb-4" style={{ minWidth: "max-content" }}>
+
+                <div className="text-center mb-5">
+                    <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight">Shop the Silhouette</h2>
+                </div>
+                <div className="hidden md:block mx-20">
+                   <div className="overflow-x-auto px-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                            <div className="flex justify-between gap-2 pb-4" style={{ minWidth: "max-content" }}>
                                 {["https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png"].map((img, idx) => (
-                                    <div key={idx} className="group cursor-pointer flex-shrink-0" style={{ width: "280px" }}>
-                                        <div className="relative aspect-[3/4] overflow-hidden bg-white">
+                                    <div key={idx} className="group cursor-pointer flex-shrink-0" style={{ width: "200px", height: "70vh" }}>
+                                        <div className="relative h-full overflow-hidden">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={img} alt={`Silhouette product ${idx + 1}`} className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
+                                            <img src={img} alt={`Silhouette product ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" />
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
+
+                </div>
+                <div className="md:hidden ">
+                    <div className="overflow-x-auto px-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                        <div className="flex gap-2 pb-4" style={{ minWidth: "max-content" }}>
+                            {["https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png"].map((img, idx) => (
+                                <div key={idx} className="group cursor-pointer flex-shrink-0" style={{ width: "200px", height: "50vh" }}>
+                                    <div className="relative h-full overflow-hidden">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={img} alt={`Silhouette product ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
+
             </div>
             <div className="relative py-16 bg-white w-full">
-                <div className="mx-auto px-8">
+                <div className="mx-auto px-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto">
                         {[
                             { title: "Tops", subtitle: "FOR THOSE WHO RUN TO FEEL FREE", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_5_720x.progressive.jpg" },
@@ -292,7 +260,7 @@ export const Homepage = () => {
             </div>
 
             {/* Newsletter Section */}
-            <div className="relative rounded w-full px-8 bg-white">
+            <div className="  w-full px-5 py-3 ">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[70vh]">
                     {/* Left Side - Image with Shop Button */}
                     <div className="relative group cursor-pointer overflow-hidden bg-orange-200 rounded-lg">
@@ -327,12 +295,12 @@ export const Homepage = () => {
                                     <input
                                         type="email"
                                         placeholder="Your email address"
-                                        className="flex-1 bg-transparent placeholder:font-walter text-white placeholder-white  text-base focus:outline-none mr-4"
+                                        className="flex-1 bg-transparent placeholder:font-walter text-white placeholder-white  text-xs focus:outline-none "
                                         aria-label="Email address"
                                     />
                                     <button
                                         type="submit"
-                                        className="text-white font-walter font-bold uppercase tracking-wider hover:opacity-80 transition-opacity text-sm focus:outline-none"
+                                        className="text-white font-walter font-bold uppercase tracking-wider hover:opacity-80 transition-opacity text-xs md:text-sm focus:outline-none"
                                         aria-label="Subscribe to newsletter"
                                     >
                                         SUBSCRIBE
@@ -352,8 +320,8 @@ export const Homepage = () => {
             </div>
 
             {/* Info Section */}
-            <div className="relative bg-gray-50 w-full py-16">
-                <div className=" mx-auto px-8">
+            <div className=" bg-white w-full py-16">
+                <div className=" mx-auto px-5">
                     {/* Top Row - Three Info Blocks */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-16 ">
                         {/* Get Help Buying */}
