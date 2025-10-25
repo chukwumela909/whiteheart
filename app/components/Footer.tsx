@@ -18,8 +18,7 @@ const Footer = () => {
                                 className="h-12 w-auto brightness-110 contrast-125 drop-shadow-md"
                             /> */}
                             <div className="font-dancing m-0 p-0 text-gray-700 text-xl font-bold flex flex-col leading-none">
-                                <h1 className="">White</h1>
-                                <h1 className="">Heart</h1>
+                                <h1 className="">White Heart</h1>
                             </div>
 
                         </div>

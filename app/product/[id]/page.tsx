@@ -9,6 +9,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [touchStart, setTouchStart] = useState(0);
     const [touchEnd, setTouchEnd] = useState(0);
+    const [showSizeGuide, setShowSizeGuide] = useState(false);
 
     // Minimum swipe distance (in px)
     const minSwipeDistance = 50;
@@ -70,6 +71,110 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
+
+            {/* Size Guide Modal */}
+            {showSizeGuide && (
+                <div className="fixed inset-0 bg-[#51515137] backdrop-blur-sm bg-opacity-40 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg  w-full max-w-3xl p-8 max-h-[90vh] overflow-y-auto">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-extrabold font-simon">Cap Size Guide</h2>
+                            <button
+                                onClick={() => setShowSizeGuide(false)}
+                                className="p-1 hover:opacity-70 transition-opacity"
+                                aria-label="Close modal"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Cap Image */}
+                        <div className="mb-8 flex justify-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src="https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870789/product-image-removebg-preview_s0awsc.png"
+                                alt="Cap size guide"
+                                className="max-h-64 object-contain"
+                            />
+                        </div>
+
+                        {/* Size Guide Table */}
+                        <div className="overflow-x-auto mb-6">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b-2 border-black">
+                                        <th className="text-left py-3 px-4 font-extrabold font-simon">Size</th>
+                                        <th className="text-left py-3 px-4 font-extrabold font-simon">Head Circumference (cm)</th>
+                                        <th className="text-left py-3 px-4 font-extrabold font-simon">Head Circumference (inches)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-200">
+                                        <td className="py-3 px-4 font-simon font-bold">XS</td>
+                                        <td className="py-3 px-4 font-simon">52-54 cm</td>
+                                        <td className="py-3 px-4 font-simon">20.5-21.3 inches</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-200">
+                                        <td className="py-3 px-4 font-simon font-bold">S</td>
+                                        <td className="py-3 px-4 font-simon">54-56 cm</td>
+                                        <td className="py-3 px-4 font-simon">21.3-22 inches</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-200">
+                                        <td className="py-3 px-4 font-simon font-bold">M</td>
+                                        <td className="py-3 px-4 font-simon">56-58 cm</td>
+                                        <td className="py-3 px-4 font-simon">22-22.8 inches</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-200">
+                                        <td className="py-3 px-4 font-simon font-bold">L</td>
+                                        <td className="py-3 px-4 font-simon">58-60 cm</td>
+                                        <td className="py-3 px-4 font-simon">22.8-23.6 inches</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-3 px-4 font-simon font-bold">XL</td>
+                                        <td className="py-3 px-4 font-simon">60-62 cm</td>
+                                        <td className="py-3 px-4 font-simon">23.6-24.4 inches</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Measurement Instructions */}
+                        <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                            <h3 className="text-lg font-extrabold font-simon mb-3">How to Measure</h3>
+                            <ol className="space-y-2 font-simon text-sm text-gray-700">
+                                <li className="flex gap-2">
+                                    <span className="font-bold">1.</span>
+                                    <span>Use a flexible measuring tape or a string that you can measure later.</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <span className="font-bold">2.</span>
+                                    <span>Wrap the tape around your head, positioning it about 1 inch above your eyebrows and ears.</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <span className="font-bold">3.</span>
+                                    <span>Make sure the tape is level and snug, but not too tight.</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <span className="font-bold">4.</span>
+                                    <span>Note the measurement and compare it to our size chart above.</span>
+                                </li>
+                            </ol>
+                        </div>
+
+                        {/* Close Button */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setShowSizeGuide(false)}
+                                className="px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="max-w-7xl mx-auto px-5 py-20">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -168,7 +273,10 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
                         <div className="mb-8">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="text-lg font-walter font-bold">Size</h3>
-                                <button className="text-sm font-simon underline hover:no-underline">
+                                <button 
+                                    onClick={() => setShowSizeGuide(true)}
+                                    className="text-sm font-simon underline hover:no-underline"
+                                >
                                     Size Guide
                                 </button>
                             </div>

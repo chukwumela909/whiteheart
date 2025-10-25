@@ -34,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${dancingScript.variable} antialiased`}
       >
         {children}
+        <script src="//code.jivosite.com/widget/T17Ve3l6eo" async></script>
       </body>
     </html>
   );
