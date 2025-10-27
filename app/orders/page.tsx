@@ -1,11 +1,66 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Orders() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const userEmail = "amirizew@gmail.com"; // This would come from authentication
+    const [userEmail, setUserEmail] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
+    const supabase = createClient();
+
+    useEffect(() => {
+        async function loadUser() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    router.push('/auth/signin');
+                    return;
+                }
+                
+                setUserEmail(session.user.email || "");
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error loading user:', error);
+                router.push('/auth/signin');
+            }
+        }
+        
+        loadUser();
+
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                router.push('/auth/signin');
+            } else {
+                setUserEmail(session.user.email || "");
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [router, supabase]);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/auth/signin');
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -86,7 +141,7 @@ export default function Orders() {
                     <button
                         onClick={() => {
                             setIsMobileMenuOpen(false);
-                            window.location.href = '/auth/signin';
+                            handleSignOut();
                         }}
                         className="block w-full text-left px-6 py-4 text-base hover:bg-gray-50 transition-colors"
                     >
@@ -173,10 +228,7 @@ export default function Orders() {
                                     Settings
                                 </Link> */}
                                 <button
-                                    onClick={() => {
-                                        // Handle sign out
-                                        window.location.href = '/auth/signin';
-                                    }}
+                                    onClick={handleSignOut}
                                     className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition-colors"
                                 >
                                     Sign out

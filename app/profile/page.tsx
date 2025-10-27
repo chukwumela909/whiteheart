@@ -1,40 +1,261 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Profile() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isEditingName, setIsEditingName] = useState(false);
     const [isAddingAddress, setIsAddingAddress] = useState(false);
-    const userEmail = "amirizew@gmail.com"; // This would come from authentication
+    const [isDeletingAddress, setIsDeletingAddress] = useState(false);
+    const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+    const [userEmail, setUserEmail] = useState("");
+    const [userId, setUserId] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [addresses, setAddresses] = useState<any[]>([]);
+    const router = useRouter();
+    const supabase = createClient();
     
     // Address form fields
     const [isDefaultAddress, setIsDefaultAddress] = useState(false);
     const [country, setCountry] = useState("France");
     const [addressFirstName, setAddressFirstName] = useState("");
     const [addressLastName, setAddressLastName] = useState("");
-    const [company, setCompany] = useState("");
     const [address, setAddress] = useState("");
     const [apartment, setApartment] = useState("");
     const [postalCode, setPostalCode] = useState("");
     const [city, setCity] = useState("");
     const [phone, setPhone] = useState("");
 
-    const handleSaveProfile = () => {
-        // Handle save logic here
-        setIsEditingName(false);
+    useEffect(() => {
+        async function loadUserData() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    router.push('/auth/signin');
+                    return;
+                }
+                
+                setUserEmail(session.user.email || "");
+                setUserId(session.user.id);
+
+                // Fetch user profile
+                const { data: profile } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .single();
+
+                if (profile) {
+                    setFirstName(profile.first_name || "");
+                    setLastName(profile.last_name || "");
+                }
+
+                // Fetch user addresses
+                const { data: userAddresses } = await supabase
+                    .from('user_addresses')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .order('is_default', { ascending: false })
+                    .order('created_at', { ascending: false });
+
+                if (userAddresses) {
+                    setAddresses(userAddresses);
+                }
+                
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                router.push('/auth/signin');
+            }
+        }
+        
+        loadUserData();
+
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                router.push('/auth/signin');
+            } else {
+                setUserEmail(session.user.email || "");
+                setUserId(session.user.id);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [router, supabase]);
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        try {
+            const { error } = await supabase
+                .from('user_profiles')
+                .upsert({
+                    user_id: userId,
+                    first_name: firstName,
+                    last_name: lastName,
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'user_id'
+                });
+
+            if (error) throw error;
+            
+            setIsEditingName(false);
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            alert('Failed to save profile. Please try again.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleSaveAddress = () => {
-        // Handle save address logic here
-        setIsAddingAddress(false);
+    const handleSaveAddress = async () => {
+        setIsSaving(true);
+        try {
+            const { error } = await supabase
+                .from('user_addresses')
+                .insert({
+                    user_id: userId,
+                    country: country,
+                    first_name: addressFirstName,
+                    last_name: addressLastName,
+                    address_line1: address,
+                    address_line2: apartment,
+                    postal_code: postalCode,
+                    city: city,
+                    phone: phone,
+                    is_default: isDefaultAddress
+                });
+
+            if (error) throw error;
+            
+            // Reload addresses
+            const { data: userAddresses } = await supabase
+                .from('user_addresses')
+                .select('*')
+                .eq('user_id', userId)
+                .order('is_default', { ascending: false })
+                .order('created_at', { ascending: false });
+
+            if (userAddresses) {
+                setAddresses(userAddresses);
+            }
+            
+            // Reset form
+            setAddressFirstName("");
+            setAddressLastName("");
+            setAddress("");
+            setApartment("");
+            setPostalCode("");
+            setCity("");
+            setPhone("");
+            setIsDefaultAddress(false);
+            setIsAddingAddress(false);
+        } catch (error) {
+            console.error('Error saving address:', error);
+            alert('Failed to save address. Please try again.');
+        } finally {
+            setIsSaving(false);
+        }
     };
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/auth/signin');
+    };
+
+    const handleDeleteAddress = async (addressId: string) => {
+        setAddressToDelete(addressId);
+        setIsDeletingAddress(true);
+    };
+
+    const confirmDeleteAddress = async () => {
+        if (!addressToDelete) return;
+
+        try {
+            const { error } = await supabase
+                .from('user_addresses')
+                .delete()
+                .eq('id', addressToDelete);
+
+            if (error) throw error;
+
+            // Reload addresses
+            const { data: userAddresses } = await supabase
+                .from('user_addresses')
+                .select('*')
+                .eq('user_id', userId)
+                .order('is_default', { ascending: false })
+                .order('created_at', { ascending: false });
+
+            if (userAddresses) {
+                setAddresses(userAddresses);
+            }
+
+            setIsDeletingAddress(false);
+            setAddressToDelete(null);
+        } catch (error) {
+            console.error('Error deleting address:', error);
+            alert('Failed to delete address. Please try again.');
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
+            {/* Delete Address Confirmation Modal */}
+            {isDeletingAddress && (
+                <div className="fixed inset-0 bg-[#51515137] backdrop-blur-sm bg-opacity-40 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg max-w-md w-full p-8">
+                        {/* Modal Header */}
+                        <div className="mb-6">
+                            <h2 className="text-xl font-extrabold font-simon mb-2">Delete address</h2>
+                            <p className="text-sm font-simon text-gray-600">
+                                Are you sure you want to delete this address? This action cannot be undone.
+                            </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => {
+                                    setIsDeletingAddress(false);
+                                    setAddressToDelete(null);
+                                }}
+                                className="px-6 py-2.5 text-sm font-bold font-simon hover:bg-gray-100 transition-colors rounded-md"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDeleteAddress}
+                                className="px-6 py-2.5 bg-red-600 text-white text-sm font-bold font-simon rounded-md hover:bg-red-700 transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Add Address Modal */}
             {isAddingAddress && (
                 <div className="fixed inset-0 bg-[#51515137] backdrop-blur-sm bg-opacity-40 z-50 flex items-center justify-center p-4">
@@ -105,17 +326,6 @@ export default function Profile() {
                                         className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-simon text-sm"
                                     />
                                 </div>
-                            </div>
-
-                            {/* Company Field */}
-                            <div>
-                                <input
-                                    type="text"
-                                    placeholder="Company"
-                                    value={company}
-                                    onChange={(e) => setCompany(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-simon text-sm"
-                                />
                             </div>
 
                             {/* Address Field */}
@@ -197,9 +407,10 @@ export default function Profile() {
                             </button>
                             <button
                                 onClick={handleSaveAddress}
-                                className="px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
+                                disabled={isSaving}
+                                className="px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Save
+                                {isSaving ? 'Saving...' : 'Save'}
                             </button>
                         </div>
                     </div>
@@ -265,10 +476,10 @@ export default function Profile() {
                             </button>
                             <button
                                 onClick={handleSaveProfile}
-                                className="px-6 py-2.5 bg-gray-200 text-gray-400 text-sm font-bold font-simon rounded-md cursor-not-allowed"
-                                disabled
+                                disabled={isSaving || (!firstName && !lastName)}
+                                className="px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
                             >
-                                Save
+                                {isSaving ? 'Saving...' : 'Save'}
                             </button>
                         </div>
                     </div>
@@ -352,7 +563,7 @@ export default function Profile() {
                     <button
                         onClick={() => {
                             setIsMobileMenuOpen(false);
-                            window.location.href = '/auth/signin';
+                            handleSignOut();
                         }}
                         className="block w-full text-left px-6 py-4 text-base hover:bg-gray-50 transition-colors"
                     >
@@ -437,9 +648,7 @@ export default function Profile() {
                                     Settings
                                 </Link> */}
                                 <button
-                                    onClick={() => {
-                                        window.location.href = '/auth/signin';
-                                    }}
+                                    onClick={handleSignOut}
                                     className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition-colors"
                                 >
                                     Sign out
@@ -495,14 +704,54 @@ export default function Profile() {
                         </button>
                     </div>
 
-                    {/* Empty State */}
-                    <div className="bg-gray-50 border mt-5 border-gray-300 rounded-md p-6 flex items-center space-x-3">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5" />
-                            <path d="M10 6V10M10 14H10.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                        <span className="text-lg font-medium font-simon  text-gray-800">No addresses added</span>
-                    </div>
+                    {/* Display Addresses or Empty State */}
+                    {addresses.length === 0 ? (
+                        <div className="bg-gray-50 border mt-5 border-gray-300 rounded-md p-6 flex items-center space-x-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5" />
+                                <path d="M10 6V10M10 14H10.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                            </svg>
+                            <span className="text-lg font-medium font-simon  text-gray-800">No addresses added</span>
+                        </div>
+                    ) : (
+                        <div className="mt-5 space-y-4">
+                            {addresses.map((addr) => (
+                                <div key={addr.id} className="border border-gray-300 rounded-md p-6 relative">
+                                    {addr.is_default && (
+                                        <span className="absolute top-4 right-4 bg-black text-white text-xs px-2 py-1 rounded font-simon font-bold">
+                                            DEFAULT
+                                        </span>
+                                    )}
+                                    <div className="space-y-2">
+                                        <p className="font-bold font-simon text-sm">
+                                            {addr.first_name} {addr.last_name}
+                                        </p>
+                                        <p className="text-sm font-simon text-gray-700">
+                                            {addr.address_line1}
+                                            {addr.address_line2 && `, ${addr.address_line2}`}
+                                        </p>
+                                        <p className="text-sm font-simon text-gray-700">
+                                            {addr.city}, {addr.postal_code}
+                                        </p>
+                                        <p className="text-sm font-simon text-gray-700">
+                                            {addr.country}
+                                        </p>
+                                        {addr.phone && (
+                                            <p className="text-sm font-simon text-gray-700">
+                                                {addr.phone}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => handleDeleteAddress(addr.id)}
+                                        className="mt-4 text-sm text-red-600 hover:text-red-800 font-simon font-bold"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </main>
 
