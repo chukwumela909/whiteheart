@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
     return (<>
@@ -32,24 +33,24 @@ const Footer = () => {
                         <div className='mr-16 mb-3 md:mb-0'>
                             <h4 className="text-lg font-walter font-bold text-black">Shop</h4>
                             <ul className="">
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Shorts</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Tops</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Pants</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Headwear</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Accessories</a></li>
+                                <li><Link href="/shop" className="text-xs font-medium font-simon text-black hover:text-gray-600 transition-colors">All Products</Link></li>
                             </ul>
                         </div>
 
                         {/* Help */}
                         <div className='mr-16 mb-3 md:mb-0'>
-                            <h4 className="text-lg font-walter font-bold text-black">Help</h4>
+                            <h4 className="text-lg font-walter font-bold text-black">Legal</h4>
                             <ul className="">
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">FAQ</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Delivery</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Return Policy</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Register A Return</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Contact Us</a></li>
-                                <li><a href="#" className="text-xs font-medium font-simon text-black hover:text-black transition-colors">Payment Options</a></li>
+                                <li><Link href="/terms" className="text-xs font-medium font-simon text-black hover:text-gray-600 transition-colors">Terms & Conditions</Link></li>
+                                <li><Link href="/privacy" className="text-xs font-medium font-simon text-black hover:text-gray-600 transition-colors">Privacy Policy</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* Contact */}
+                        <div className='mr-16 mb-3 md:mb-0'>
+                            <h4 className="text-lg font-walter font-bold text-black">Contact</h4>
+                            <ul className="">
+                                <li><a href="https://wa.me/+2348105258679" target="_blank" rel="noopener noreferrer" className="text-xs font-medium font-simon text-black hover:text-gray-600 transition-colors">Customer Service</a></li>
                             </ul>
                         </div>
 
@@ -63,9 +64,6 @@ const Footer = () => {
                                     <path d="M2 12h20" stroke="black" strokeWidth="1" />
                                 </svg>
                                 <span className="text-sm font-simon text-black">Portharcourt (RIV)</span>
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
                             </div>
                         </div>
                     </div>
@@ -76,10 +74,9 @@ const Footer = () => {
                 <div className=" border-gray-300 ">
                     <div className="flex flex-col md:flex-row justify-end items-center">
                         <div className="flex space-x-6">
-                            <a href="#" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">©2025 WhiteHeart</a>
-                            <a href="#" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">Manage Cookies</a>
-                            <a href="/terms" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">Terms & Conditions</a>
-                            <a href="/privacy" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">Privacy Policy</a>
+                            <span className="text-xs font-simon text-gray-600">©2025 WhiteHeart</span>
+                            <Link href="/terms" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">Terms & Conditions</Link>
+                            <Link href="/privacy" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">Privacy Policy</Link>
                         </div>
                     </div>
                 </div>
@@ -115,34 +112,26 @@ const Footer = () => {
                 {/* Social Icons */}
                 <div className="flex justify-center items-center gap-8 mb-8">
                     {/* Instagram */}
-                    <a href="#" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
+                    <Link href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="2" y="2" width="20" height="20" rx="5" stroke="black" strokeWidth="1.5"/>
                             <circle cx="12" cy="12" r="4" stroke="black" strokeWidth="1.5"/>
                             <circle cx="18" cy="6" r="1" fill="black"/>
                         </svg>
-                    </a>
-
-                    {/* Strava */}
-                    <a href="#" aria-label="Strava" className="hover:opacity-70 transition-opacity">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L8 12h8L12 2z" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M12 12l-4 8 4-4 4 4-4-8" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </a>
+                    </Link>
 
                     {/* YouTube */}
-                    <a href="#" aria-label="YouTube" className="hover:opacity-70 transition-opacity">
+                    <Link href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="hover:opacity-70 transition-opacity">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="2" y="5" width="20" height="14" rx="2" stroke="black" strokeWidth="1.5"/>
                             <path d="M10 9l5 3-5 3V9z" fill="black"/>
                         </svg>
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Copyright */}
                 <div className="text-center">
-                    <p className="text-sm font-extrabold font-dancing text-black">©2025 SATISFY®</p>
+                    <p className="text-sm font-extrabold font-dancing text-black">©2025 WhiteHeart®</p>
                 </div>
             </div>
         </footer>

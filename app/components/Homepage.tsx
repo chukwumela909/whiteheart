@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import Link from "next/link";
@@ -12,12 +13,13 @@ interface SlideItem {
 }
 
 interface ProductItem {
-    id: number;
+    id: string;
     name: string;
-    price: string;
-    colors: string[];
-    front: string;
-    back: string;
+    price: number;
+    image_url: string;
+    colors: { name: string; hex: string }[];
+    category: string;
+    stock_quantity: number;
 }
 
 const slides: SlideItem[] = [
@@ -33,52 +35,34 @@ const slides: SlideItem[] = [
     },
 ];
 
-const newArrivals: ProductItem[] = [
-    {
-        id: 1,
-        name: "TechSilk™ Evo 9\" Half Tights",
-        price: "170 EUR",
-        colors: ["#2D2D2D"],
-        front: "https://satisfyrunning.com/cdn/shop/files/11006-AB-OA_MothTech-t-shirt_aged-black_back.jpg?v=1750081078&width=533",
-        back: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870992/product-image2_uu4zsl.png",
-    },
-    {
-        id: 2,
-        name: "PeaceShell™ River Shirt",
-        price: "290 EUR",
-        colors: ["#8B4513", "#2D2D2D"],
-        front: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870789/product-image-removebg-preview_s0awsc.png",
-        back: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870992/product-image2_uu4zsl.png",
-    },
-    {
-        id: 3,
-        name: "MothTech™ T-Shirt",
-        price: "120 EUR",
-        colors: ["#A08B7A", "#F5E6D3", "#2D2D2D"],
-        front: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870789/product-image-removebg-preview_s0awsc.png",
-        back: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870992/product-image2_uu4zsl.png",
-    },
-    {
-        id: 4,
-        name: "Justice™ Cordura® 5L Hydration Vest",
-        price: "260 EUR",
-        colors: ["#F5F5F5", "#2D2D2D"],
-        front: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870789/product-image-removebg-preview_s0awsc.png",
-        back: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870992/product-image2_uu4zsl.png",
-    },
-    {
-        id: 5,
-        name: "MothTech™ Long Sleeve",
-        price: "140 EUR",
-        colors: ["#2D2D2D", "#A08B7A"],
-        front: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870789/product-image-removebg-preview_s0awsc.png",
-        back: "https://res.cloudinary.com/daf6mdwkh/image/upload/v1758870992/product-image2_uu4zsl.png",
-    },
-];
-
 export const Homepage = () => {
     const [currentSlide, setCurrentSlide] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
+    const [products, setProducts] = useState<ProductItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const supabase = createClient();
+
+    useEffect(() => {
+        loadProducts();
+    }, []);
+
+    const loadProducts = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            if (error) throw error;
+            setProducts(data || []);
+        } catch (error) {
+            console.error('Error loading products:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (!isPlaying) return;
@@ -116,7 +100,7 @@ export const Homepage = () => {
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center">
                                 <h1 className="text-5xl md:text-7xl font-walter font-extrabold mb-2 tracking-tight">{slide.title}</h1>
                                 <p className="text-lg md:text-md font-simon uppercase mb-10 font-light tracking-wider">{slide.subtitle}</p>
-                                <a href="#" className="bg-white text-black uppercase font-walter font-extrabold tracking-wider py-1 px-6 rounded-full hover:bg-gray-200 transition-colors text-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" tabIndex={0} aria-label={`Shop ${slide.title}`}>SHOP</a>
+                                <Link href="/shop" className="bg-white text-black uppercase font-walter font-extrabold tracking-wider py-1 px-6 rounded-full hover:bg-gray-200 transition-colors text-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" tabIndex={0} aria-label={`Shop ${slide.title}`}>SHOP</Link>
                             </div>
                         </div>
                     ))}
@@ -143,32 +127,59 @@ export const Homepage = () => {
                         <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight">New Arrivals</h2>
                     </div>
                     <div className="relative  min-h-0 ">
-                        <div className="overflow-x-auto h-full w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                            <div className="flex items-start gap-8 h-full pb-2" style={{ minWidth: "max-content" }}>
-                                {newArrivals.map((product) => (
-                                    <Link key={product.id} href={`/product/${product.id}`} className="flex-shrink-0 w-56 md:w-72 group cursor-pointer select-none">
-                                        <div className="relative  aspect-[4/4] md:aspect-[4/4]">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={product.front} alt={product.name} className="w-full h-full object-contain transition-opacity duration-300 group-hover:opacity-0" />
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={product.back} alt={`${product.name} back view`} className="absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                                        </div>
-                                        <div className="text-center px-1">
-                                            <h3 className="font-walter font-bold text-base md:text-sm text-black mb-1 tracking-tight leading-snug">{product.name}</h3>
-                                            <p className="font-simon text-xs md:text-xs text-gray-700 mb-3 tracking-wide">{product.price}</p>
-                                            <div className="flex justify-center gap-2">
-                                                {product.colors.map((color, index) => (
-                                                    <button key={index} className="w-3.5 h-3.5 rounded-full border border-gray-400 hover:border-black transition-colors duration-200" style={{ backgroundColor: color }} aria-label={`Color option ${index + 1} for ${product.name}`} />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
+                        {loading ? (
+                            <div className="flex justify-center items-center py-20">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
                             </div>
-                        </div>
+                        ) : products.length === 0 ? (
+                            <div className="text-center py-20">
+                                <p className="font-simon text-gray-600">No products available yet.</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto h-full w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                                <div className="flex items-start gap-8 h-full pb-2" style={{ minWidth: "max-content" }}>
+                                    {products.map((product) => (
+                                        <Link key={product.id} href={`/product/${product.id}`} className="flex-shrink-0 w-56 md:w-72 group cursor-pointer select-none">
+                                            <div className="relative aspect-[4/4] md:aspect-[4/4]  rounded-lg overflow-hidden">
+                                                {product.image_url ? (
+                                                    <>
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img 
+                                                            src={product.image_url} 
+                                                            alt={product.name} 
+                                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                                                        />
+                                                    </>
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-center px-1">
+                                                <h3 className="font-walter font-bold text-base md:text-sm text-black mb-1 tracking-tight leading-snug">{product.name}</h3>
+                                                <p className="font-simon text-xs md:text-xs text-gray-700 mb-3 tracking-wide">₦{product.price.toLocaleString()}</p>
+                                                <div className="flex justify-center gap-2">
+                                                    {product.colors && product.colors.length > 0 && product.colors.map((color, index) => (
+                                                        <button 
+                                                            key={index} 
+                                                            className="w-3.5 h-3.5 rounded-full border border-gray-400 hover:border-black transition-colors duration-200" 
+                                                            style={{ backgroundColor: color.hex }} 
+                                                            aria-label={`${color.name} color for ${product.name}`} 
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="text-center mt-9 shrink-0">
-                        <button className="bg-black text-white rounded font-walter font-bold uppercase tracking-wider px-5 py-3 hover:bg-gray-800 transition-colors duration-200 text-xs md:text-xs" aria-label="View all new arrivals">View All</button>
+                        <Link href="/shop" className="bg-black text-white rounded font-walter font-bold uppercase tracking-wider px-5 py-3 hover:bg-gray-800 transition-colors duration-200 text-xs md:text-xs" aria-label="View all new arrivals">View All</Link>
                     </div>
                 </div>
             </div>
@@ -181,7 +192,7 @@ export const Homepage = () => {
                             { title: "Shorts", subtitle: "THE HEART OF YOUR KIT", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_6_720x.progressive.jpg" },
                             { title: "Headwear", subtitle: "LIGHTWEIGHT ELEMENTAL PROTECTION", img: "https://satisfyrunning.com/cdn/shop/files/Bloc-Headwear-Desktop_720x.progressive.jpg" },
                         ].map((cat) => (
-                            <div key={cat.title} className="relative group cursor-pointer overflow-hidden">
+                            <Link key={cat.title} href="/shop" className="relative group overflow-hidden block">
                                 <div className="relative aspect-[4/5] overflow-hidden">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={cat.img} alt={`${cat.title} collection`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -189,10 +200,10 @@ export const Homepage = () => {
                                     <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white text-center">
                                         <h3 className="text-4xl md:text-5xl font-walter font-extrabold mb-2 tracking-tight">{cat.title}</h3>
                                         <p className="text-sm font-simon uppercase mb-6 font-light tracking-wider">{cat.subtitle}</p>
-                                        <button className="bg-white rounded-full text-black px-6 py-2 font-walter font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label={`Shop ${cat.title}`}>SHOP</button>
+                                        <span className="bg-white rounded-full text-black px-6 py-2 font-walter font-bold uppercase tracking-wider group-hover:bg-gray-200 transition-colors text-sm">SHOP</span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
@@ -242,7 +253,7 @@ export const Homepage = () => {
                             { title: "Shorts", subtitle: "THE HEART OF YOUR KIT", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_6_720x.progressive.jpg" },
                             { title: "Headwear", subtitle: "LIGHTWEIGHT ELEMENTAL PROTECTION", img: "https://satisfyrunning.com/cdn/shop/files/Bloc-Headwear-Desktop_720x.progressive.jpg" },
                         ].map((cat) => (
-                            <div key={cat.title} className="relative group cursor-pointer overflow-hidden">
+                            <Link key={cat.title} href="/shop" className="relative group overflow-hidden block">
                                 <div className="relative aspect-[4/5] overflow-hidden">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={cat.img} alt={`${cat.title} collection`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -250,10 +261,10 @@ export const Homepage = () => {
                                     <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white text-center">
                                         <h3 className="text-4xl md:text-5xl font-walter font-extrabold mb-2 tracking-tight">{cat.title}</h3>
                                         <p className="text-sm font-simon uppercase mb-6 font-light tracking-wider">{cat.subtitle}</p>
-                                        <button className="bg-white rounded-full text-black px-6 py-2 font-walter font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label={`Shop ${cat.title}`}>SHOP</button>
+                                        <span className="bg-white rounded-full text-black px-6 py-2 font-walter font-bold uppercase tracking-wider group-hover:bg-gray-200 transition-colors text-sm">SHOP</span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
@@ -263,7 +274,7 @@ export const Homepage = () => {
             <div className="  w-full px-5 py-3 ">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[70vh]">
                     {/* Left Side - Image with Shop Button */}
-                    <div className="relative group cursor-pointer overflow-hidden bg-orange-200 rounded-lg">
+                    <Link href="/shop" className="relative group overflow-hidden bg-orange-200 rounded-lg block">
                         <div className="relative rounded-lg w-full h-full min-h-[400px] lg:min-h-[70vh]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -273,12 +284,12 @@ export const Homepage = () => {
                             />
                             <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-center">
 
-                                <button className="bg-white text-black px-4 py-1 font-walter font-bold uppercase tracking-wider hover:bg-gray-100 transition-colors text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Shop Possessed Collection">
+                                <span className="bg-white text-black px-4 py-1 font-walter font-bold uppercase tracking-wider group-hover:bg-gray-100 transition-colors text-sm rounded-full">
                                     SHOP
-                                </button>
+                                </span>
                             </div>
                         </div>
-                    </div>
+                    </Link>
 
                     {/* Right Side - Newsletter Form */}
                     <div className="bg-[#baafa4] rounded-lg flex flex-col justify-center items-center p-8 lg:p-16 min-h-[400px] lg:min-h-[70vh]">
@@ -340,7 +351,7 @@ export const Homepage = () => {
                                     <p className="text-xs mb-1.5 font-simon text-black ">
                                         If you have any questions about our gear, get in touch.
                                     </p>
-                                    <a href="#" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
+                                    <a href="https://wa.me/+2348105258679" target="_blank" rel="noopener noreferrer" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
                                         Chat with us
                                     </a>
                                 </div>
@@ -365,9 +376,9 @@ export const Homepage = () => {
                                     <p className="text-xs mb-1.5 font-simon text-black ">
                                         Fast, secure delivery with tracking for peace of mind.
                                     </p>
-                                    <a href="#" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
+                                    <Link href="/terms" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
                                         Learn more
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
 
@@ -389,9 +400,9 @@ export const Homepage = () => {
                                     <p className="text-xs mb-1.5 font-simon text-black ">
                                         Free returns on all orders within 14 days from the delivery date.
                                     </p>
-                                    <a href="#" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
+                                    <Link href="/terms" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
                                         Learn more
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

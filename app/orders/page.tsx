@@ -4,11 +4,28 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+interface Order {
+    id: string;
+    created_at: string;
+    total_amount: number;
+    status: string;
+    order_items: {
+        id: string;
+        quantity: number;
+        products: {
+            name: string;
+            image_url: string;
+            images: string[] | null;
+        };
+    }[];
+}
+
 export default function Orders() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [userEmail, setUserEmail] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    const [orders, setOrders] = useState<Order[]>([]);
     const router = useRouter();
     const supabase = createClient();
 
@@ -23,6 +40,7 @@ export default function Orders() {
                 }
                 
                 setUserEmail(session.user.email || "");
+                await loadOrders(session.user.id);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error loading user:', error);
@@ -38,6 +56,7 @@ export default function Orders() {
                 router.push('/auth/signin');
             } else {
                 setUserEmail(session.user.email || "");
+                loadOrders(session.user.id);
             }
         });
 
@@ -45,6 +64,47 @@ export default function Orders() {
             subscription.unsubscribe();
         };
     }, [router, supabase]);
+
+    const loadOrders = async (userId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('orders')
+                .select(`
+                    *,
+                    order_items (
+                        id,
+                        quantity,
+                        products (
+                            name,
+                            image_url,
+                            images
+                        )
+                    )
+                `)
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setOrders(data || []);
+        } catch (error) {
+            console.error('Error loading orders:', error);
+        }
+    };
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'delivered':
+                return 'text-green-600 bg-green-50';
+            case 'shipped':
+                return 'text-blue-600 bg-blue-50';
+            case 'processing':
+                return 'text-yellow-600 bg-yellow-50';
+            case 'cancelled':
+                return 'text-red-600 bg-red-50';
+            default:
+                return 'text-gray-600 bg-gray-50';
+        }
+    };
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -243,19 +303,114 @@ export default function Orders() {
             <main className="max-w-7xl mx-auto px-6 py-12">
                 <h1 className="text-2xl font-extrabold font-simon mb-12">Orders</h1>
 
-                {/* Empty State */}
-                <div className="bg-white rounded-lg   py-24 text-center">
-                    <h2 className="text-lg font-extrabold font-simon mb-2">No orders yet</h2>
-                    <p className="text-gray-600 text-md mb-6">
-                        Go to store to place an order.
-                    </p>
-                    {/* <Link
-                        href="/"
-                        className="inline-block px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors text-sm font-medium"
-                    >
-                        Go to Store
-                    </Link> */}
-                </div>
+                {isLoading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                    </div>
+                ) : orders.length === 0 ? (
+                    /* Empty State */
+                    <div className="bg-white rounded-lg   py-24 text-center">
+                        <h2 className="text-lg font-extrabold font-simon mb-2">No orders yet</h2>
+                        <p className="text-gray-600 text-md mb-6">
+                            Go to store to place an order.
+                        </p>
+                        {/* <Link
+                            href="/"
+                            className="inline-block px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors text-sm font-medium"
+                        >
+                            Go to Store
+                        </Link> */}
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        {orders.map((order) => (
+                            <div key={order.id} className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                                <div className="p-6">
+                                    {/* Order Header */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                                        <div className="flex items-center space-x-4 mb-3 sm:mb-0">
+                                            <div>
+                                                <p className="text-sm text-gray-500">Order Number</p>
+                                                <p className="font-semibold text-gray-900">
+                                                    #{order.id.slice(0, 8).toUpperCase()}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-500">Placed On</p>
+                                                <p className="font-medium text-gray-900">
+                                                    {new Date(order.created_at).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric'
+                                                    })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Order Items */}
+                                    <div className="border-t border-gray-200 pt-4">
+                                        <div className="space-y-3">
+                                            {order.order_items.slice(0, 3).map((item) => {
+                                                const imageUrl = item.products.images?.[0] || item.products.image_url;
+                                                return (
+                                                    <div key={item.id} className="flex items-center space-x-4">
+                                                        <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
+                                                            {imageUrl && (
+                                                                <img
+                                                                    src={imageUrl}
+                                                                    alt={item.products.name}
+                                                                    className="w-full h-full object-cover object-center"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                                {item.products.name}
+                                                            </p>
+                                                            <p className="text-sm text-gray-500">
+                                                                Quantity: {item.quantity}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                            {order.order_items.length > 3 && (
+                                                <p className="text-sm text-gray-500 pl-20">
+                                                    + {order.order_items.length - 3} more item{order.order_items.length - 3 !== 1 ? 's' : ''}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Order Footer */}
+                                    <div className="border-t border-gray-200 mt-4 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Total Amount</p>
+                                            <p className="text-2xl font-bold text-gray-900">
+                                                ₦{order.total_amount.toLocaleString()}
+                                            </p>
+                                        </div>
+                                        <Link
+                                            href={`/orders/${order.id}`}
+                                            className="mt-3 sm:mt-0 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                                        >
+                                            View Details
+                                            <svg className="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </main>
 
             {/* Footer */}
