@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { isUserAdmin } from "@/lib/admin-helpers";
 import AdminNavbar from "../../components/AdminNavbar";
 import Footer from "../../components/Footer";
 import SuccessModal from "../../components/SuccessModal";
@@ -63,14 +62,34 @@ export default function OrderManagementPage() {
     }, []);
 
     const checkAdminAccess = async () => {
-        const admin = await isUserAdmin();
-        if (!admin) {
-            setErrorMessage('Access denied. Admin privileges required.');
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                setErrorMessage('Access denied. Please log in.');
+                setShowErrorModal(true);
+                setTimeout(() => router.push('/auth/login'), 2000);
+                return;
+            }
+
+            const { data: profile, error } = await supabase
+                .from('user_profiles')
+                .select('is_admin')
+                .eq('user_id', user.id)
+                .single();
+
+            if (error || !profile?.is_admin) {
+                setErrorMessage('Access denied. Admin privileges required.');
+                setShowErrorModal(true);
+                setTimeout(() => router.push('/'), 2000);
+                return;
+            }
+
+            loadOrders();
+        } catch (error) {
+            console.error('Error checking admin access:', error);
+            setErrorMessage('Error verifying access. Please try again.');
             setShowErrorModal(true);
-            setTimeout(() => router.push('/'), 2000);
-            return;
         }
-        loadOrders();
     };
 
     const loadOrders = async () => {
