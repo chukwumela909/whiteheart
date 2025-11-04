@@ -15,8 +15,8 @@ export default function TermsAndConditions() {
                     <p className="mb-4 leading-relaxed">
                         The General Conditions of Sale detailed below (hereinafter referred to as the "General Conditions"), govern, to the exclusion of 
                         all other terms, the contractual relations between any non-professional user of the{" "}
-                        <a href="https://whiteheart.com" className="underline">www.whiteheart.com</a> website (hereinafter 
-                        referred to as the "User" or "You") and the merchant, <a href="https://whiteheart.com" className="underline">whiteheart.com</a> that 
+                        <a href="https://www.whiteheartconcepts.com" className="underline">www.www.whiteheartconcepts.com</a> website (hereinafter 
+                        referred to as the "User" or "You") and the merchant, <a href="https://www.whiteheartconcepts.com" className="underline">www.whiteheartconcepts.com</a> that 
                         belongs to WHITE HEART, a company with share capital of 1000 euros, whose registered office is situated at 100 rue de la Folie Méricourt, 
                         75011 Paris, entry No. 813 250 075 in the Paris Trade and Companies Register, with VAT registration No. FR23813250075 (hereinafter referred 
                         to as "WHITE HEART."). These General Conditions shall be the sole applicable conditions and supersede all other conditions, save as 
@@ -24,7 +24,7 @@ export default function TermsAndConditions() {
                     </p>
                     <p className="mb-4 leading-relaxed">
                         WHITE HEART may need to amend certain provisions of its General Conditions without notice and, accordingly, these conditions must be 
-                        re-read before any order is placed on the <a href="https://whiteheart.com" className="underline">www.whiteheart.com</a> website (hereinafter 
+                        re-read before any order is placed on the <a href="https://www.whiteheartconcepts.com" className="underline">www.www.whiteheartconcepts.com</a> website (hereinafter 
                         referred to as the "Website"). The General Conditions are accessible at any time on the Website and prevail, if applicable, over any other 
                         version or any other contradictory document.
                     </p>
@@ -40,7 +40,7 @@ export default function TermsAndConditions() {
                     <p className="mb-4 leading-relaxed">
                         WHITE HEART uses the Website to offer for sale textile products and accessories manufactured by and/or for WHITE HEART or its commercial 
                         partners, if any, (hereinafter referred to as the "Products") to Users browsing the{" "}
-                        <a href="https://whiteheart.com" className="underline">www.whiteheart.com</a> Website. The principal 
+                        <a href="https://www.whiteheartconcepts.com" className="underline">www.www.whiteheartconcepts.com</a> Website. The principal 
                         characteristics of the Products are shown on our Website.
                     </p>
                     <p className="mb-4 leading-relaxed">
@@ -205,7 +205,7 @@ export default function TermsAndConditions() {
                         For any questions or complaints regarding our Products or services, You can contact WHITE HEART customer service:
                     </p>
                     <ul className="list-none pl-0 mb-4 space-y-2">
-                        <li>Email: support@whiteheart.com</li>
+                        <li>Email: support@www.whiteheartconcepts.com</li>
                         <li>Phone: +1 (555) 123-4567</li>
                         <li>Address: 100 Main Street, New York, NY 10001, United States</li>
                     </ul>

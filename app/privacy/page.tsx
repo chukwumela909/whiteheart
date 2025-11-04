@@ -14,7 +14,7 @@ export default function PrivacyPolicy() {
                     <h2 className="font-bold text-2xl mb-4">1. INTRODUCTION</h2>
                     <p className="mb-4 leading-relaxed">
                         WHITE HEART ("we," "us," "our," or "Company") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, 
-                        and safeguard your information when you visit our website <a href="https://whiteheart.com" className="underline">www.whiteheart.com</a> (the "Website"), 
+                        and safeguard your information when you visit our website <a href="https://www.whiteheartconcepts.com" className="underline">www.www.whiteheartconcepts.com</a> (the "Website"), 
                         including any other media form, media channel, mobile website, or mobile application related or connected thereto (collectively, the "Site").
                     </p>
                     <p className="mb-4 leading-relaxed">
@@ -231,7 +231,7 @@ export default function PrivacyPolicy() {
                         If you have any questions, concerns, or requests regarding this Privacy Policy or our privacy practices, please contact us at:
                     </p>
                     <ul className="list-none pl-0 mb-4 space-y-2">
-                        <li><strong>Email:</strong> privacy@whiteheart.com</li>
+                        <li><strong>Email:</strong> privacy@www.whiteheartconcepts.com</li>
                         <li><strong>Phone:</strong> +1 (555) 123-4567</li>
                         <li><strong>Mailing Address:</strong> WHITE HEART, 100 Main Street, New York, NY 10001, United States</li>
                     </ul>

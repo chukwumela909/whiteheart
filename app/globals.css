@@ -11,6 +11,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-dancing: var(--font-dancing-script);
+  --font-lato: var(--font-lato);
 }
 
 @media (prefers-color-scheme: dark) {
