@@ -268,7 +268,7 @@ export default function Navbar({ transparent = false }: NavbarProps) {
                         <div className={`hidden ml-7 md:flex space-x-6 ${transparent ? 'text-white' : 'text-black'}`}>
                             <Link href="/shop" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Shop link" tabIndex={0}>SHOP</Link>
                             {/* <a href="#" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Magazine link" tabIndex={0}>MAGAZINE</a> */}
-                            <a href="https://wa.me/+2348105258679" target="_blank" rel="noopener noreferrer" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Customer service link" tabIndex={0}>CUSTOMER SERVICE</a>
+                            <a href="https://wa.me/+2349035910744" target="_blank" rel="noopener noreferrer" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Customer service link" tabIndex={0}>CUSTOMER SERVICE</a>
                         </div>
                     </div>
                     <div className={`ml-auto flex items-center space-x-6 ${transparent ? 'text-white' : 'text-black'}`}>

@@ -351,7 +351,7 @@ export const Homepage = () => {
                                     <p className="text-xs mb-1.5 font-simon text-black ">
                                         If you have any questions about our gear, get in touch.
                                     </p>
-                                    <a href="https://wa.me/+2348105258679" target="_blank" rel="noopener noreferrer" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
+                                    <a href="https://wa.me/+2349035910744" target="_blank" rel="noopener noreferrer" className="text-xs font-medium border-b  font-simon text-black hover:no-underline transition-all">
                                         Chat with us
                                     </a>
                                 </div>

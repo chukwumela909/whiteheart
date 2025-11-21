@@ -228,7 +228,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
                     </p>
                     <p className="text-sm font-simon text-gray-700">
                         For any questions, feel free to{" "}
-                        <a href="https://wa.me/+2348105258679" target="_blank" rel="noopener noreferrer" className="text-black underline font-semibold">
+                        <a href="https://wa.me/+2349035910744" target="_blank" rel="noopener noreferrer" className="text-black underline font-semibold">
                             contact us on WhatsApp
                         </a>
                         .
