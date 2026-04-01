@@ -72,7 +72,7 @@ const Footer = () => {
 
                 {/* Bottom Footer */}
                 <div className=" border-gray-300 ">
-                    <div className="flex flex-col md:flex-row justify-end items-center">
+                    <div className="flex flex-col md:flex-row justify-end items-center md:pr-40">
                         <div className="flex space-x-6">
                             <span className="text-xs font-simon text-gray-600">©2025 WhiteHeart</span>
                             <Link href="/terms" className="text-xs font-simon text-gray-600 hover:text-black transition-colors">Terms & Conditions</Link>
@@ -111,6 +111,13 @@ const Footer = () => {
 
                 {/* Social Icons */}
                 <div className="flex justify-center items-center gap-8 mb-8">
+                    {/* X (Twitter) */}
+                    <Link href="https://x.com/thebrandwh?s=21" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="hover:opacity-70 transition-opacity">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="black"/>
+                        </svg>
+                    </Link>
+
                     {/* Instagram */}
                     <Link href="https://www.instagram.com/white.heart_outfits?igsh=bnBlNjg5Nm9ieXh4" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -130,7 +137,7 @@ const Footer = () => {
                 </div>
 
                 {/* Copyright */}
-                <div className="text-center">
+                <div className="text-center pb-12">
                     <p className="text-sm font-extrabold font-dancing text-black">©2025 WhiteHeart®</p>
                 </div>
             </div>
