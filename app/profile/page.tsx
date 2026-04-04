@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import BrandLogo from "../components/BrandLogo";
 
 export default function Profile() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -509,11 +510,12 @@ export default function Profile() {
 
                 {/* Logo */}
                 <div className="flex justify-center pt-6 pb-8 border-b border-gray-200">
-                    <Link href="/" className="flex items-center space-x-1 cursor-pointer select-none">
-                        <div className="font-dancing m-0 p-0 text-3xl font-bold flex flex-col leading-none text-black">
-                            <h1>White Heart</h1>
-                        </div>
-                    </Link>
+                    <BrandLogo
+                        href="/"
+                        className="w-[200px] h-[76px]"
+                        imageClassName="object-contain"
+                        alt="Whiteheart logo"
+                    />
                 </div>
 
                 {/* User Email */}
@@ -588,11 +590,12 @@ export default function Profile() {
 
                     {/* Logo and Navigation */}
                     <div className="flex items-center space-x-8">
-                        <Link href="/" className="flex items-center space-x-1 cursor-pointer select-none">
-                            <div className="font-dancing mr-5 p-0 text-2xl font-bold flex flex-col leading-none text-black">
-                                <h1>White Heart</h1>
-                            </div>
-                        </Link>
+                        <BrandLogo
+                            href="/"
+                            className="mr-5 w-[180px] h-[68px]"
+                            imageClassName="object-contain"
+                            alt="Whiteheart logo"
+                        />
 
                         <nav className="hidden md:flex items-center space-x-6">
                             <Link href="/" className="text-sm font-bold hover:opacity-70 transition-opacity">
