@@ -399,9 +399,12 @@ export default function CheckoutPage() {
             {/* Header */}
             <div className="bg-white border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <Link href="/" className="font-dancing text-2xl font-bold text-black">
-                            White Heart
-                        </Link>
+                            <BrandLogo
+                                href="/"
+                                className="w-[190px] h-[72px]"
+                                imageClassName="object-contain"
+                                alt="Whiteheart logo"
+                            />
                 </div>
             </div>
 

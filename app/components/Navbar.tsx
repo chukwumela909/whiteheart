@@ -1,10 +1,10 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/app/contexts/CartContext";
+import BrandLogo from "./BrandLogo";
 
 interface NavbarProps {
     transparent?: boolean;
@@ -250,20 +250,12 @@ export default function Navbar({ transparent = false }: NavbarProps) {
             <nav className={`${transparent ? 'bg-transparent border-none' : 'bg-white border-b border-gray-200'}`}>
                 <div className="flex items-center py-4 px-8 md:px-12">
                     <div className="flex items-center space-x-12">
-                        <Link href="/" className="flex items-center space-x-1 cursor-pointer select-none">
-                            {/* <Image
-                                src="/whiteheart-logo-v1.png"
-                                alt="Whiteheart Logo"
-                                width={200}
-                                height={75}
-                                priority
-                                className="md:h-16 h-9 w-auto brightness-110 contrast-125 drop-shadow-md"
-                            /> */}
-                            <div className={`font-dancing m-0 p-0 md:text-3xl text-xl font-bold flex flex-col leading-none ${transparent ? 'text-white' : 'text-black'}`}>
-                                <h1 className="">White Heart</h1>
-                           
-                            </div>
-                        </Link>
+                        <BrandLogo
+                            href="/"
+                            className="cursor-pointer select-none w-[150px] h-[56px] md:w-[220px] md:h-[80px]"
+                            imageClassName="object-contain"
+                            alt="Whiteheart logo"
+                        />
 
                         <div className={`hidden ml-7 md:flex space-x-6 ${transparent ? 'text-white' : 'text-black'}`}>
                             <Link href="/shop" className="font-simon text-sm tracking-wide hover:opacity-70 transition-all" aria-label="Shop link" tabIndex={0}>SHOP</Link>

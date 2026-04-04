@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import BrandLogo from "../../components/BrandLogo";
 
 export default function SignIn() {
     const [email, setEmail] = useState('');
@@ -76,11 +77,12 @@ export default function SignIn() {
                 <div className="bg-white rounded-lg p-8 md:p-8 w-full max-w-md">
                     {/* Whiteheart Logo */}
                     <div className="flex justify-center mb-8">
-                        <Link href="/" className="flex items-center space-x-1 cursor-pointer select-none">
-                            <div className="font-dancing m-0 p-0 text-3xl font-bold flex flex-col leading-none text-black">
-                                <h1>White Heart</h1>
-                            </div>
-                        </Link>
+                        <BrandLogo
+                            href="/"
+                            className="w-[200px] h-[76px]"
+                            imageClassName="object-contain"
+                            alt="Whiteheart logo"
+                        />
                     </div>
 
                     {/* OTP Verification */}
@@ -149,12 +151,12 @@ export default function SignIn() {
             <div className="bg-white rounded-lg  p-8 md:p-8 w-full max-w-md">
                 {/* Whiteheart Logo */}
                 <div className="flex justify-center mb-8">
-                    <Link href="/" className="flex items-center space-x-1 cursor-pointer select-none">
-                        <div className="font-dancing m-0 p-0 text-3xl font-bold flex flex-col leading-none text-black">
-                            <h1>White Heart</h1>
-                           
-                        </div>
-                    </Link>
+                    <BrandLogo
+                        href="/"
+                        className="w-[200px] h-[76px]"
+                        imageClassName="object-contain"
+                        alt="Whiteheart logo"
+                    />
                 </div>
 
                 {/* Sign in heading */}

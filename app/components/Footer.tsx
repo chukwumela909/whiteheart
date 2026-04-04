@@ -1,6 +1,6 @@
 import React from 'react';
-import Image from "next/image";
 import Link from "next/link";
+import BrandLogo from "./BrandLogo";
 
 const Footer = () => {
     return (<>
@@ -10,17 +10,12 @@ const Footer = () => {
                     {/* Company Info */}
                     <div className="md:col-span-3">
                         <div className="flex items-center space-x-1 cursor-pointer select-none mt-10 mb-5">
-                            {/* <Image
-                                src="/whiteheart-logo-v1.png"
-                                alt="Whiteheart Logo"
-                                width={120}
-                                height={60}
-                                priority
-                                className="h-12 w-auto brightness-110 contrast-125 drop-shadow-md"
-                            /> */}
-                            <div className="font-dancing m-0 p-0 text-gray-700 text-xl font-bold flex flex-col leading-none">
-                                <h1 className="">White Heart</h1>
-                            </div>
+                            <BrandLogo
+                                href="/"
+                                className="w-[170px] h-[64px] md:w-[200px] md:h-[74px]"
+                                imageClassName="object-contain"
+                                alt="Whiteheart logo"
+                            />
 
                         </div>
                         <p className="text-xs font-medium font-simon text-black w-89">
@@ -107,18 +102,12 @@ const Footer = () => {
                 {/* Top Section - Brand and Description */}
                 <div className="mb-6">
                    <div className="flex items-center space-x-1 cursor-pointer select-none mb-2">
-                            {/* <Image
-                                src="/whiteheart-logo-v1.png"
-                                alt="Whiteheart Logo"
-                                width={120}
-                                height={60}
-                                priority
-                                className="h-12 w-auto brightness-110 contrast-125 drop-shadow-md"
-                            /> */}
-                            <div className="font-dancing m-0 p-0 text-gray-700 text-xl font-extrabold flex flex-col leading-none">
-                                <h1 className="">White</h1>
-                                <h1 className="">Heart</h1>
-                            </div>
+                            <BrandLogo
+                                href="/"
+                                className="w-[170px] h-[64px]"
+                                imageClassName="object-contain"
+                                alt="Whiteheart logo"
+                            />
 
                         </div>
                     <p className="text-xs font-inter text-black leading-relaxed max-w-md">

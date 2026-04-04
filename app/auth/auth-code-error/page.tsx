@@ -1,10 +1,18 @@
 import Link from 'next/link'
+import BrandLogo from '../../components/BrandLogo'
 
 export default function AuthCodeError() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <h1 className="font-dancing text-5xl text-black mb-8">whiteheart</h1>
+        <div className="flex justify-center mb-8">
+          <BrandLogo
+            href="/"
+            className="w-[250px] h-[94px]"
+            imageClassName="object-contain"
+            alt="Whiteheart logo"
+          />
+        </div>
         <h2 className="text-2xl font-simon font-extrabold mb-4">
           Authentication Error
         </h2>

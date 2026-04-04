@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import BrandLogo from "./BrandLogo";
 
 export default function AdminNavbar() {
     const [user, setUser] = useState<any>(null);
@@ -41,9 +42,12 @@ export default function AdminNavbar() {
             <div className="max-w-7xl mx-auto px-8 md:px-12">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
-                    <Link href="/admin" className="text-3xl font-dancing hover:opacity-80 transition-opacity">
-                        Whiteheart
-                    </Link>
+                    <BrandLogo
+                        href="/admin"
+                        className="w-[170px] h-[64px] hover:opacity-80 transition-opacity"
+                        imageClassName="object-contain"
+                        alt="Whiteheart admin logo"
+                    />
 
                     {/* Admin Navigation */}
                     <div className="hidden md:flex items-center gap-8">
