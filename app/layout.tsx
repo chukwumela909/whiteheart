@@ -29,6 +29,15 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "Whiteheart",
   description: "An e-commerce platform for whiteheart brand caps.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
