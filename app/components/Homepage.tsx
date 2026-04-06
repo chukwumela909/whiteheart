@@ -209,42 +209,7 @@ export const Homepage = () => {
                 </div>
             </div>
 
-            <div className="relative  bg-white w-full">
 
-                <div className="text-center mb-5">
-                    <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight">Shop the Silhouette</h2>
-                </div>
-                <div className="hidden md:block mx-20">
-                   <div className="overflow-x-auto px-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                            <div className="flex justify-between gap-2 pb-4" style={{ minWidth: "max-content" }}>
-                                {["https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png"].map((img, idx) => (
-                                    <div key={idx} className="group cursor-pointer flex-shrink-0" style={{ width: "200px", height: "70vh" }}>
-                                        <div className="relative h-full overflow-hidden">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={img} alt={`Silhouette product ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                </div>
-                <div className="md:hidden ">
-                    <div className="overflow-x-auto px-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                        <div className="flex gap-2 pb-4" style={{ minWidth: "max-content" }}>
-                            {["https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png", "https://res.cloudinary.com/daf6mdwkh/image/upload/c_fill,w_1200,h_1800/v1758879532/model-image2_quxfn9.png"].map((img, idx) => (
-                                <div key={idx} className="group cursor-pointer flex-shrink-0" style={{ width: "200px", height: "50vh" }}>
-                                    <div className="relative h-full overflow-hidden">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={img} alt={`Silhouette product ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
             <div className="relative py-16 bg-white w-full">
                 <div className="mx-auto px-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto">
