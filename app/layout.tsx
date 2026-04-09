@@ -26,6 +26,8 @@ const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
 });
 
+export const metadataBase = new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
+
 export const metadata: Metadata = {
   title: "Whiteheart",
   description: "An e-commerce platform for whiteheart brand caps.",
@@ -34,9 +36,31 @@ export const metadata: Metadata = {
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.png", type: "image/png" },
     ],
-    apple: [
-      { url: "/apple-icon.png", type: "image/png" },
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
+  openGraph: {
+    title: "Whiteheart",
+    description: "An e-commerce platform for whiteheart brand caps.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    siteName: "Whiteheart",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/WH-NEW-LOGO-transparent.png`,
+        width: 1200,
+        height: 630,
+        alt: "Whiteheart logo",
+      },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Whiteheart",
+    description: "An e-commerce platform for whiteheart brand caps.",
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/WH-NEW-LOGO-transparent.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -52,6 +76,20 @@ export default function RootLayout({
       >
         <NotificationProvider>
           <CartProvider>
+            {/* JSON-LD Organization metadata to help search engines pick up the site logo */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Organization",
+                  name: "Whiteheart",
+                  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+                  logo:
+                    `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/WH-NEW-LOGO-transparent.png`,
+                }),
+              }}
+            />
             {children}
           </CartProvider>
         </NotificationProvider>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap (update the URL if you set NEXT_PUBLIC_SITE_URL)
+Sitemap: /sitemap.xml
