@@ -67,7 +67,7 @@ const Footer = () => {
 
                 {/* Bottom Footer */}
                 <div className=" border-gray-300 ">
-                    <div className="flex flex-col md:flex-row justify-between items-center md:pr-40">
+                    <div className="flex flex-col md:flex-row justify-between items-center md:pr-40 footer-legal-safe-zone">
                         <div className="flex space-x-6 mb-4 md:mb-0">
                             <Link href="https://x.com/thebrandwh?s=21" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="hover:opacity-70 transition-opacity">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -37,3 +37,29 @@ body {
     transform: scale(1);
   }
 }
+
+/* Prevent the Jivo chat widget from covering footer/legal links on larger screens */
+@media (min-width: 768px) {
+  /* Hide Jivo containers/iframes with broader matching for runtime-generated classnames */
+  iframe[src*="jivosite"],
+  iframe[src*="jivo"],
+  iframe[title*="Jivo"],
+  div[id^="jivo"],
+  div[id*="jivo"],
+  div[class*="jivo"],
+  .jivo-iframe,
+  .jivo-widget,
+  .jivo-launcher,
+  #jvlabelWrap,
+  #jivo-container {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Fallback spacing for legal links in case vendor markup changes */
+  .footer-legal-safe-zone {
+    padding-right: 22rem;
+    padding-bottom: 5rem;
+  }
+}
