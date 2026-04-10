@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Dancing_Script, Lato } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
+import JivoWidget from "./components/JivoWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -93,7 +94,7 @@ export default function RootLayout({
             {children}
           </CartProvider>
         </NotificationProvider>
-        <script src="//code.jivosite.com/widget/T17Ve3l6eo" async></script>
+        <JivoWidget />
       </body>
     </html>
   );

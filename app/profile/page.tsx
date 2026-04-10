@@ -57,8 +57,15 @@ export default function Profile() {
                 if (profile) {
                     setFirstName(profile.first_name || "");
                     setLastName(profile.last_name || "");
-                    setIsAdmin(!!profile.is_admin);
                 }
+
+                const { data: adminProfile } = await supabase
+                    .from('user_profiles')
+                    .select('is_admin')
+                    .eq('user_id', session.user.id)
+                    .single();
+
+                setIsAdmin(!!adminProfile?.is_admin);
 
                 // Fetch user addresses
                 const { data: userAddresses } = await supabase
