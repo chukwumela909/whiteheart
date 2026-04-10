@@ -675,24 +675,24 @@ export default function Profile() {
             <main className="max-w-7xl mx-auto px-6 py-12">
                 <h1 className="text-2xl font-extrabold font-simon mb-12">Profile</h1>
 
-                <div className="bg-white rounded-lg p-6 mb-6 border border-gray-200">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full ${isAdmin ? 'bg-green-600' : 'bg-gray-400'}`} />
-                            <p className="text-sm font-simon text-gray-700">
-                                <span className="font-bold">Admin status:</span> {isAdmin ? 'Admin' : 'Customer'}
-                            </p>
-                        </div>
-                        {isAdmin && (
+                {isAdmin && (
+                    <div className="bg-white rounded-lg p-6 mb-6 border border-gray-200">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-green-600" />
+                                <p className="text-sm font-simon text-gray-700">
+                                    <span className="font-bold">Admin status:</span> Admin
+                                </p>
+                            </div>
                             <Link
                                 href="/admin"
                                 className="inline-flex items-center justify-center px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
                             >
                                 Go to Admin
                             </Link>
-                        )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Profile Card */}
                 <div className="bg-white rounded-lg p-8 mb-6">
