@@ -675,6 +675,33 @@ export default function Profile() {
             <main className="max-w-7xl mx-auto px-6 py-12">
                 <h1 className="text-2xl font-extrabold font-simon mb-12">Profile</h1>
 
+                <div className="bg-white rounded-lg p-6 mb-6 border border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <p className="text-sm font-bold font-simon text-gray-500">Admin Access</p>
+                            <p className={`text-sm font-simon mt-1 ${isAdmin ? 'text-green-700' : 'text-gray-600'}`}>
+                                {isAdmin ? 'You have admin access' : 'You do not have admin access'}
+                            </p>
+                        </div>
+                        {isAdmin ? (
+                            <Link
+                                href="/admin"
+                                className="inline-flex items-center justify-center px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
+                            >
+                                Go to Admin
+                            </Link>
+                        ) : (
+                            <button
+                                type="button"
+                                disabled
+                                className="inline-flex items-center justify-center px-6 py-2.5 bg-gray-200 text-gray-500 text-sm font-bold font-simon rounded-md cursor-not-allowed"
+                            >
+                                Go to Admin
+                            </button>
+                        )}
+                    </div>
+                </div>
+
                 {/* Profile Card */}
                 <div className="bg-white rounded-lg p-8 mb-6">
                     {/* Name Section */}
@@ -702,27 +729,6 @@ export default function Profile() {
                         <p className="text-gray-800 font-bold font-simon text-sm">{userEmail}</p>
                     </div>
 
-                    <div className="mt-5 flex items-center gap-3">
-                        <span className={`text-xs font-simon font-bold px-2.5 py-1 rounded ${isAdmin ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                            {isAdmin ? 'Admin: Yes' : 'Admin: No'}
-                        </span>
-                        {isAdmin ? (
-                            <Link
-                                href="/admin"
-                                className="inline-flex items-center px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
-                            >
-                                Go to Admin
-                            </Link>
-                        ) : (
-                            <button
-                                type="button"
-                                disabled
-                                className="inline-flex items-center px-6 py-2.5 bg-gray-200 text-gray-500 text-sm font-bold font-simon rounded-md cursor-not-allowed"
-                            >
-                                Go to Admin
-                            </button>
-                        )}
-                    </div>
                 </div>
 
                 {/* Addresses Section */}
