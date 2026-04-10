@@ -40,7 +40,7 @@ body {
 
 /* Prevent the Jivo chat widget from covering footer/legal links on larger screens */
 @media (min-width: 768px) {
-  /* Hide Jivo containers/iframes with broader matching for runtime-generated classnames */
+  /* Keep Jivo visible but move it above footer area on desktop/laptop */
   iframe[src*="jivosite"],
   iframe[src*="jivo"],
   iframe[title*="Jivo"],
@@ -52,9 +52,7 @@ body {
   .jivo-launcher,
   #jvlabelWrap,
   #jivo-container {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+    bottom: 6.5rem !important;
   }
 
   /* Fallback spacing for legal links in case vendor markup changes */

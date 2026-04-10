@@ -702,16 +702,27 @@ export default function Profile() {
                         <p className="text-gray-800 font-bold font-simon text-sm">{userEmail}</p>
                     </div>
 
-                    {isAdmin && (
-                        <div className="mt-5">
+                    <div className="mt-5 flex items-center gap-3">
+                        <span className={`text-xs font-simon font-bold px-2.5 py-1 rounded ${isAdmin ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                            {isAdmin ? 'Admin: Yes' : 'Admin: No'}
+                        </span>
+                        {isAdmin ? (
                             <Link
                                 href="/admin"
                                 className="inline-flex items-center px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
                             >
                                 Go to Admin
                             </Link>
-                        </div>
-                    )}
+                        ) : (
+                            <button
+                                type="button"
+                                disabled
+                                className="inline-flex items-center px-6 py-2.5 bg-gray-200 text-gray-500 text-sm font-bold font-simon rounded-md cursor-not-allowed"
+                            >
+                                Go to Admin
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Addresses Section */}
