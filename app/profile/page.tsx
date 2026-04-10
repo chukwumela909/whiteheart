@@ -677,27 +677,19 @@ export default function Profile() {
 
                 <div className="bg-white rounded-lg p-6 mb-6 border border-gray-200">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <p className="text-sm font-bold font-simon text-gray-500">Admin Access</p>
-                            <p className={`text-sm font-simon mt-1 ${isAdmin ? 'text-green-700' : 'text-gray-600'}`}>
-                                {isAdmin ? 'You have admin access' : 'You do not have admin access'}
+                        <div className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full ${isAdmin ? 'bg-green-600' : 'bg-gray-400'}`} />
+                            <p className="text-sm font-simon text-gray-700">
+                                <span className="font-bold">Admin status:</span> {isAdmin ? 'Admin' : 'Customer'}
                             </p>
                         </div>
-                        {isAdmin ? (
+                        {isAdmin && (
                             <Link
                                 href="/admin"
                                 className="inline-flex items-center justify-center px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
                             >
                                 Go to Admin
                             </Link>
-                        ) : (
-                            <button
-                                type="button"
-                                disabled
-                                className="inline-flex items-center justify-center px-6 py-2.5 bg-gray-200 text-gray-500 text-sm font-bold font-simon rounded-md cursor-not-allowed"
-                            >
-                                Go to Admin
-                            </button>
                         )}
                     </div>
                 </div>
