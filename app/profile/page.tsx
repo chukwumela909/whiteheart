@@ -16,6 +16,7 @@ export default function Profile() {
     const [userId, setUserId] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [isAdmin, setIsAdmin] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [addresses, setAddresses] = useState<any[]>([]);
@@ -56,6 +57,7 @@ export default function Profile() {
                 if (profile) {
                     setFirstName(profile.first_name || "");
                     setLastName(profile.last_name || "");
+                    setIsAdmin(!!profile.is_admin);
                 }
 
                 // Fetch user addresses
@@ -692,6 +694,17 @@ export default function Profile() {
                         <label className="text-sm font-bold font-simon text-gray-500 block mb-1">Email</label>
                         <p className="text-gray-800 font-bold font-simon text-sm">{userEmail}</p>
                     </div>
+
+                    {isAdmin && (
+                        <div className="mt-5">
+                            <Link
+                                href="/admin"
+                                className="inline-flex items-center px-6 py-2.5 bg-black text-white text-sm font-bold font-simon rounded-md hover:bg-gray-800 transition-colors"
+                            >
+                                Go to Admin
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
                 {/* Addresses Section */}
