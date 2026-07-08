@@ -1,16 +1,10 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import Link from "next/link";
-
-interface SlideItem {
-    image: string;
-    title: string;
-    subtitle: string;
-}
 
 interface ProductItem {
     id: string;
@@ -22,24 +16,11 @@ interface ProductItem {
     stock_quantity: number;
 }
 
-const slides: SlideItem[] = [
-    {
-        image: "https://satisfyrunning.com/cdn/shop/files/Summer-Essentials-Homepage-Desktop_7_2000x.progressive.jpg",
-        title: "Summer Essentials",
-        subtitle: "EQUIPMENT FOR ALL PURSUITS",
-    },
-    {
-        image: "https://satisfyrunning.com/cdn/shop/files/satisfy-homepage-the-rocker_2000x.progressive.jpg",
-        title: "The Rocker",
-        subtitle: "PERFORMANCE REDEFINED",
-    },
-];
-
 export const Homepage = () => {
-    const [currentSlide, setCurrentSlide] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [products, setProducts] = useState<ProductItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const supabase = createClient();
 
     useEffect(() => {
@@ -64,20 +45,16 @@ export const Homepage = () => {
         }
     };
 
-    useEffect(() => {
-        if (!isPlaying) return;
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, [isPlaying]);
-
     const handleTogglePlayPause = useCallback(() => {
-        setIsPlaying((p) => !p);
-    }, []);
-
-    const handleGoToSlide = useCallback((index: number) => {
-        setCurrentSlide(index);
+        const video = videoRef.current;
+        if (!video) return;
+        if (video.paused) {
+            video.play();
+            setIsPlaying(true);
+        } else {
+            video.pause();
+            setIsPlaying(false);
+        }
     }, []);
 
     return (
@@ -91,28 +68,25 @@ export const Homepage = () => {
             </nav>
 
             <div className="relative h-[80vh] w-full overflow-hidden">
-                <div className="flex transition-transform duration-700 ease-in-out h-full" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-                    {slides.map((slide, index) => (
-                        <div key={index} className="relative w-full h-full flex-shrink-0">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={slide.image} alt={`${slide.title} - ${slide.subtitle}`} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/10" />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center">
-                                <h1 className="text-5xl md:text-7xl font-walter font-extrabold mb-2 tracking-tight">{slide.title}</h1>
-                                <p className="text-lg md:text-md font-simon uppercase mb-10 font-light tracking-wider">{slide.subtitle}</p>
-                                <Link href="/shop" className="bg-white text-black uppercase font-walter font-extrabold tracking-wider py-1 px-6 rounded-full hover:bg-gray-200 transition-colors text-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" tabIndex={0} aria-label={`Shop ${slide.title}`}>SHOP</Link>
-                            </div>
-                        </div>
-                    ))}
+                <video
+                    ref={videoRef}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src="/hero.mp4"
+                    poster="/hero-poster.jpg"
+                    preload="metadata"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    aria-label="Whiteheart hero background video"
+                />
+                <div className="absolute inset-0 bg-black/10" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center">
+                    <h1 className="text-5xl md:text-7xl font-walter font-extrabold mb-2 tracking-tight">Summer Essentials</h1>
+                    <p className="text-lg md:text-md font-simon uppercase mb-10 font-light tracking-wider">EQUIPMENT FOR ALL PURSUITS</p>
+                    <Link href="/shop" className="bg-white text-black uppercase font-walter font-extrabold tracking-wider py-1 px-6 rounded-full hover:bg-gray-200 transition-colors text-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" tabIndex={0} aria-label="Shop Summer Essentials">SHOP</Link>
                 </div>
-                <div className="absolute bottom-10 left-0 right-0 flex justify-center">
-                    <div className="flex space-x-2">
-                        {slides.map((_, index) => (
-                            <button key={index} onClick={() => handleGoToSlide(index)} className={`w-8 h-[2px] rounded-full transition-all duration-300 ${index === currentSlide ? "bg-white" : "bg-white/30"}`} aria-label={`Go to slide ${index + 1}`} />
-                        ))}
-                    </div>
-                </div>
-                <button onClick={handleTogglePlayPause} aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"} tabIndex={0} className="absolute bottom-10 right-10 text-white focus:outline-none hover:opacity-80 transition-opacity">
+                <button onClick={handleTogglePlayPause} aria-label={isPlaying ? "Pause background video" : "Play background video"} tabIndex={0} className="absolute bottom-10 right-10 text-white focus:outline-none hover:opacity-80 transition-opacity">
                     {isPlaying ? (
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     ) : (
