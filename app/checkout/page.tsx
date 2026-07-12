@@ -5,13 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import { createClient } from "@/lib/supabase/client";
+import BrandLogo from "@/app/components/BrandLogo";
 import Link from "next/link";
-
-declare global {
-    interface Window {
-        PaystackPop: any;
-    }
-}
 
 interface ShippingInfo {
     firstName: string;
@@ -41,14 +36,13 @@ interface SavedAddress {
 
 export default function CheckoutPage() {
     const router = useRouter();
-    const { cart, getCartTotal, clearCart } = useCart();
-    const { showSuccess, showError } = useNotification();
+    const { cart, getCartTotal } = useCart();
+    const { showError } = useNotification();
     const supabase = createClient();
     
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
     const [useNewAddress, setUseNewAddress] = useState(false);
@@ -66,27 +60,7 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         checkAuth();
-        loadPaystackScript();
     }, []);
-
-    const loadPaystackScript = () => {
-        // Check if script is already loaded
-        if (window.PaystackPop) {
-            setPaystackLoaded(true);
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.src = 'https://js.paystack.co/v1/inline.js';
-        script.async = true;
-        script.onload = () => {
-            setPaystackLoaded(true);
-        };
-        script.onerror = () => {
-            showError('Payment Error', 'Failed to load payment system. Please refresh the page.');
-        };
-        document.body.appendChild(script);
-    };
 
     const checkAuth = async () => {
         const { data: { session } } = await supabase.auth.getSession();
@@ -199,11 +173,6 @@ export default function CheckoutPage() {
     const handlePlaceOrder = async () => {
         if (!validateForm()) return;
 
-        if (!paystackLoaded) {
-            showError('Payment Error', 'Payment system is still loading. Please wait a moment and try again.');
-            return;
-        }
-
         setLoading(true);
 
         try {
@@ -306,68 +275,24 @@ export default function CheckoutPage() {
                 throw new Error('Failed to add items to order. Please contact support.');
             }
 
-            // Payment success handler (must be outside Paystack config)
-            const handlePaymentSuccess = async (response: any) => {
-                console.log("Payment successful:", response);
-                
-                // Update order payment status
-                const { error: updateError } = await supabase
-                    .from('orders')
-                    .update({
-                        payment_status: 'paid',
-                        status: 'processing'
-                    })
-                    .eq('id', order.id);
-
-                if (updateError) {
-                    console.error("Error updating payment status:", updateError);
-                }
-
-                // Success notification
-                showSuccess('Payment Successful!', 'Your order has been placed successfully. Redirecting...');
-
-                // Clear cart
-                clearCart();
-
-                // Redirect to order confirmation
-                setTimeout(() => {
-                    router.push(`/orders/${order.id}`);
-                }, 1500);
-            };
-
-            // Initialize Paystack payment
-            const handler = window.PaystackPop.setup({
-                key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_your_key_here',
-                email: shippingInfo.email,
-                amount: total * 100, // Paystack expects amount in kobo (multiply by 100)
-                currency: 'NGN',
-                ref: orderNumber,
-                metadata: {
-                    custom_fields: [
-                        {
-                            display_name: "Order ID",
-                            variable_name: "order_id",
-                            value: order.id
-                        },
-                        {
-                            display_name: "Customer Name",
-                            variable_name: "customer_name",
-                            value: `${orderData.shipping_address.firstName} ${orderData.shipping_address.lastName}`
-                        }
-                    ]
-                },
-                callback: function(response: any) {
-                    handlePaymentSuccess(response);
-                },
-                onClose: function() {
-                    console.log("Payment window closed");
-                    showError('Payment Cancelled', 'You closed the payment window. Your order is saved but not paid.');
-                    setLoading(false);
-                }
+            // Hand off to the server to create the Paystack transaction, then
+            // send the customer to Paystack's secure checkout. Payment is
+            // confirmed server-side on /payment/callback (and via webhook) —
+            // the browser never marks the order paid on its own.
+            const initRes = await fetch('/api/payments/initialize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: order.id }),
             });
+            const initData = await initRes.json();
 
-            handler.openIframe();
-            setLoading(false);
+            if (!initRes.ok || !initData.authorization_url) {
+                throw new Error(initData.error || 'Could not start payment. Please try again.');
+            }
+
+            // Navigate to Paystack. The cart is cleared after confirmation on
+            // the callback page, so an abandoned payment keeps the cart intact.
+            window.location.href = initData.authorization_url;
 
         } catch (error: any) {
             console.error("Error creating order:", error);
@@ -737,10 +662,10 @@ export default function CheckoutPage() {
                             {/* Place Order Button */}
                             <button
                                 onClick={handlePlaceOrder}
-                                disabled={loading || !paystackLoaded}
+                                disabled={loading}
                                 className="w-full bg-black text-white py-4 rounded-lg font-walter font-bold text-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
-                                {loading ? "Processing..." : !paystackLoaded ? "Loading Payment..." : "Proceed to Payment"}
+                                {loading ? "Processing..." : "Proceed to Payment"}
                             </button>
 
                             <div className="flex items-center justify-center gap-2 mt-3">
