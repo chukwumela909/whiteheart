@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BrandLogo from "./BrandLogo";
 
 export default function AdminNavbar() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [userName, setUserName] = useState<string>("");
     const supabase = createClient();
     const router = useRouter();

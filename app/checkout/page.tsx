@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import { createClient } from "@/lib/supabase/client";
+import {
+    NETWORK_ERROR_MESSAGE,
+    getErrorCode,
+    getErrorMessage,
+    isNetworkError,
+} from "@/lib/errors";
 import BrandLogo from "@/app/components/BrandLogo";
 import Link from "next/link";
 
@@ -18,6 +24,32 @@ interface ShippingInfo {
     state: string;
     postalCode: string;
     country: string;
+}
+
+interface ShippingAddress {
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    /** Only captured on the new-address form; saved addresses have no state column. */
+    state?: string;
+    postalCode: string;
+    country: string;
+}
+
+interface NewOrder {
+    user_id: string | null;
+    order_number: string;
+    total_amount: number;
+    status: string;
+    payment_status: string;
+    payment_method: string;
+    contact_info: {
+        email: string;
+        phone: string;
+    };
+    shipping_address_id?: string;
+    shipping_address?: ShippingAddress;
 }
 
 interface SavedAddress {
@@ -176,22 +208,15 @@ export default function CheckoutPage() {
         setLoading(true);
 
         try {
-            console.log("Starting order placement...");
-            console.log("User ID:", userId);
-            console.log("Cart items:", cart);
-            
             // Calculate totals
             const subtotal = getCartTotal();
             const shipping = 0; // Free shipping
             const total = subtotal + shipping;
 
-            console.log("Order totals - Subtotal:", subtotal, "Shipping:", shipping, "Total:", total);
-
             // Generate order number
             const orderNumber = `WH${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
-            console.log("Generated order number:", orderNumber);
 
-            let orderData: any = {
+            const orderData: NewOrder = {
                 user_id: userId,
                 order_number: orderNumber,
                 total_amount: total,
@@ -206,7 +231,6 @@ export default function CheckoutPage() {
 
             // If using saved address, reference it
             if (!useNewAddress && selectedAddressId) {
-                console.log("Using saved address:", selectedAddressId);
                 const selectedAddress = savedAddresses.find(addr => addr.id === selectedAddressId);
                 if (selectedAddress) {
                     orderData.shipping_address_id = selectedAddressId;
@@ -220,7 +244,6 @@ export default function CheckoutPage() {
                     };
                 }
             } else {
-                console.log("Using new address");
                 // Using new address
                 orderData.shipping_address = {
                     firstName: shippingInfo.firstName,
@@ -233,8 +256,6 @@ export default function CheckoutPage() {
                 };
             }
 
-            console.log("Final order data:", orderData);
-
             // Create order in database first
             const { data: order, error: orderError } = await supabase
                 .from('orders')
@@ -244,8 +265,7 @@ export default function CheckoutPage() {
 
             if (orderError) {
                 console.error("Order creation error:", orderError);
-                console.error("Order data being sent:", orderData);
-                
+
                 // Show more specific error messages based on the error
                 if (orderError.message.includes('violates foreign key constraint')) {
                     throw new Error('Invalid address or user information. Please try again.');
@@ -294,15 +314,20 @@ export default function CheckoutPage() {
             // the callback page, so an abandoned payment keeps the cart intact.
             window.location.href = initData.authorization_url;
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error creating order:", error);
-            
+
+            const message = getErrorMessage(error);
+            const code = getErrorCode(error);
+
             // Show specific error message
-            if (error.message) {
-                showError('Order Failed', error.message);
-            } else if (error.code === 'PGRST116') {
+            if (isNetworkError(error)) {
+                showError('Connection Problem', NETWORK_ERROR_MESSAGE);
+            } else if (message) {
+                showError('Order Failed', message);
+            } else if (code === 'PGRST116') {
                 showError('Authentication Required', 'Please sign in to place an order.');
-            } else if (error.code === '23503') {
+            } else if (code === '23503') {
                 showError('Invalid Data', 'One or more products in your cart are no longer available.');
             } else {
                 showError('Order Failed', 'Unable to process your order. Please check your connection and try again.');

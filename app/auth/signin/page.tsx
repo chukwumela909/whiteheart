@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { getUserFacingErrorMessage } from "@/lib/errors";
 import BrandLogo from "../../components/BrandLogo";
 
 export default function SignIn() {
@@ -31,8 +32,8 @@ export default function SignIn() {
             if (error) throw error;
 
             setOtpSent(true);
-        } catch (err: any) {
-            setError(err.message || 'Failed to send OTP');
+        } catch (err: unknown) {
+            setError(getUserFacingErrorMessage(err, 'Failed to send OTP'));
         } finally {
             setIsLoading(false);
         }
@@ -64,8 +65,8 @@ export default function SignIn() {
                 router.push('/orders');
                 router.refresh();
             }
-        } catch (err: any) {
-            setError(err.message || 'Invalid OTP');
+        } catch (err: unknown) {
+            setError(getUserFacingErrorMessage(err, 'Invalid OTP'));
         } finally {
             setIsLoading(false);
         }

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { getUserFacingErrorMessage } from "@/lib/errors";
 import AdminNavbar from "../../../../components/AdminNavbar";
 import Footer from "../../../../components/Footer";
 import Link from "next/link";
@@ -30,6 +31,18 @@ interface ProductImage {
     id: string;
     image_url: string;
     display_order: number;
+}
+
+/** Shape of the entries stored in the products.colors JSONB column. */
+interface ProductColorJson {
+    name: string;
+    hex: string;
+}
+
+/** Shape of the entries stored in the products.sizes JSONB column. */
+interface ProductSizeJson {
+    name: string;
+    stock: number;
 }
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
@@ -91,7 +104,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
             // Parse colors from JSONB
             if (product.colors && Array.isArray(product.colors)) {
-                setColors(product.colors.map((c: any, index: number) => ({
+                setColors(product.colors.map((c: ProductColorJson, index: number) => ({
                     id: `color-${index}`,
                     color_name: c.name,
                     hex_code: c.hex,
@@ -101,7 +114,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
             // Parse sizes from JSONB
             if (product.sizes && Array.isArray(product.sizes)) {
-                setSizes(product.sizes.map((s: any, index: number) => ({
+                setSizes(product.sizes.map((s: ProductSizeJson, index: number) => ({
                     id: `size-${index}`,
                     size_name: s.name,
                     stock_quantity: s.stock,
@@ -292,9 +305,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
             alert('Product updated successfully!');
             router.push('/admin/products');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error updating product:', error);
-            alert('Error updating product: ' + error.message);
+            alert('Error updating product: ' + getUserFacingErrorMessage(error, 'Please try again.'));
         } finally {
             setSaving(false);
         }

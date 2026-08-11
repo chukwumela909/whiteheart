@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { getUserFacingErrorMessage } from "@/lib/errors";
 import AdminNavbar from "../../../components/AdminNavbar";
 import Footer from "../../../components/Footer";
 import SuccessModal from "../../../components/SuccessModal";
@@ -158,9 +159,9 @@ export default function NewProductPage() {
             if (productError) throw productError;
 
             setShowSuccessModal(true);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error creating product:', error);
-            setErrorMessage(error.message || 'Failed to create product');
+            setErrorMessage(getUserFacingErrorMessage(error, 'Failed to create product'));
             setShowErrorModal(true);
         } finally {
             setLoading(false);
