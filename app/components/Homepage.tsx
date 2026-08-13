@@ -98,7 +98,7 @@ export const Homepage = () => {
             <div className="relative bg-white w-full flex justify-between content-between flex-col">
                 <div className="flex-1 flex flex-col w-full pt-10 pb-4">
                     <div className="text-center shrink-0">
-                        <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight">New Arrivals</h2>
+                        <h2 className="text-3xl md:text-5xl font-walter font-extrabold text-black tracking-tight mb-6">New Arrivals</h2>
                     </div>
                     <div className="relative  min-h-0 ">
                         {loading ? (
@@ -111,7 +111,7 @@ export const Homepage = () => {
                             </div>
                         ) : (
                             <div className="overflow-x-auto h-full w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                                <div className="flex items-start gap-8 h-full pb-2" style={{ minWidth: "max-content" }}>
+                                <div className="flex items-start gap-8 h-full pb-2 px-5" style={{ minWidth: "max-content" }}>
                                     {products.map((product) => (
                                         <Link key={product.id} href={`/product/${product.id}`} className="flex-shrink-0 w-56 md:w-72 group cursor-pointer select-none">
                                             <div className="relative aspect-[4/4] md:aspect-[4/4]  rounded-lg overflow-hidden">
