@@ -162,9 +162,9 @@ export const Homepage = () => {
                 <div className="mx-auto px-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto">
                         {[
-                            { title: "Tops", subtitle: "FOR THOSE WHO RUN TO FEEL FREE", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_5_720x.progressive.jpg" },
-                            { title: "Shorts", subtitle: "THE HEART OF YOUR KIT", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_6_720x.progressive.jpg" },
-                            { title: "Headwear", subtitle: "LIGHTWEIGHT ELEMENTAL PROTECTION", img: "https://satisfyrunning.com/cdn/shop/files/Bloc-Headwear-Desktop_720x.progressive.jpg" },
+                            { title: "Tees", subtitle: "EVERYDAY ESSENTIALS", img: "/categories/category-3.jpeg" },
+                            { title: "Sets", subtitle: "THE HEART OF YOUR KIT", img: "/categories/category-1.jpeg" },
+                            { title: "Accessories", subtitle: "THE FINISHING TOUCHES", img: "/categories/category-2.jpeg" },
                         ].map((cat) => (
                             <Link key={cat.title} href="/shop" className="relative group overflow-hidden block">
                                 <div className="relative aspect-[4/5] overflow-hidden">
@@ -188,9 +188,9 @@ export const Homepage = () => {
                 <div className="mx-auto px-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto">
                         {[
-                            { title: "Tops", subtitle: "FOR THOSE WHO RUN TO FEEL FREE", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_5_720x.progressive.jpg" },
-                            { title: "Shorts", subtitle: "THE HEART OF YOUR KIT", img: "https://satisfyrunning.com/cdn/shop/files/PHOTO-DESKTOP_6_720x.progressive.jpg" },
-                            { title: "Headwear", subtitle: "LIGHTWEIGHT ELEMENTAL PROTECTION", img: "https://satisfyrunning.com/cdn/shop/files/Bloc-Headwear-Desktop_720x.progressive.jpg" },
+                            { title: "New Drop", subtitle: "STRAIGHT OFF THE LINE", img: "/categories/category-4.jpeg" },
+                            { title: "Headwear", subtitle: "TOPPED OFF RIGHT", img: "/categories/category-6.jpeg" },
+                            { title: "Outerwear", subtitle: "LIGHTWEIGHT ELEMENTAL PROTECTION", img: "/categories/category-5.jpeg" },
                         ].map((cat) => (
                             <Link key={cat.title} href="/shop" className="relative group overflow-hidden block">
                                 <div className="relative aspect-[4/5] overflow-hidden">
