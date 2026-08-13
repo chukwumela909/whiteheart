@@ -6,6 +6,8 @@ import AdminNavbar from "../../../components/AdminNavbar";
 import Footer from "../../../components/Footer";
 import SuccessModal from "../../../components/SuccessModal";
 import ErrorModal from "../../../components/ErrorModal";
+import ImageCompressPrompt from "../../../components/ImageCompressPrompt";
+import { DEFAULT_MAX_SIZE_BYTES } from "@/lib/imageCompression";
 import Link from "next/link";
 
 interface ColorInput {
@@ -41,6 +43,7 @@ export default function NewProductPage() {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [oversizedFiles, setOversizedFiles] = useState<File[]>([]);
     const router = useRouter();
     const supabase = createClient();
 
@@ -51,15 +54,27 @@ export default function NewProductPage() {
         });
     };
 
+    const addImageFiles = (files: File[]) => {
+        setImageFiles(prev => [...prev, ...files]);
+        setImagePreviewUrls(prev => [...prev, ...files.map(file => URL.createObjectURL(file))]);
+    };
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const files = Array.from(e.target.files);
-            setImageFiles([...imageFiles, ...files]);
-            
-            // Create preview URLs
-            const newPreviewUrls = files.map(file => URL.createObjectURL(file));
-            setImagePreviewUrls([...imagePreviewUrls, ...newPreviewUrls]);
-        }
+        if (!e.target.files) return;
+
+        const files = Array.from(e.target.files);
+        const validFiles = files.filter(file => file.size <= DEFAULT_MAX_SIZE_BYTES);
+        const tooLarge = files.filter(file => file.size > DEFAULT_MAX_SIZE_BYTES);
+
+        if (validFiles.length > 0) addImageFiles(validFiles);
+        if (tooLarge.length > 0) setOversizedFiles(tooLarge);
+
+        e.target.value = "";
+    };
+
+    const handleCompressComplete = (compressedFiles: File[]) => {
+        addImageFiles(compressedFiles);
+        setOversizedFiles([]);
     };
 
     const removeImage = (index: number) => {
@@ -447,6 +462,13 @@ export default function NewProductPage() {
                 isOpen={showErrorModal}
                 onClose={handleErrorClose}
                 message={errorMessage}
+            />
+
+            <ImageCompressPrompt
+                isOpen={oversizedFiles.length > 0}
+                files={oversizedFiles}
+                onCancel={() => setOversizedFiles([])}
+                onComplete={handleCompressComplete}
             />
         </>
     );

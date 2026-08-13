@@ -1,9 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import AdminNavbar from "../../../../components/AdminNavbar";
 import Footer from "../../../../components/Footer";
+import ImageCompressPrompt from "../../../../components/ImageCompressPrompt";
+import { DEFAULT_MAX_SIZE_BYTES } from "@/lib/imageCompression";
 import Link from "next/link";
 
 interface ColorInput {
@@ -32,7 +34,8 @@ interface ProductImage {
     display_order: number;
 }
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -46,6 +49,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     const [existingImages, setExistingImages] = useState<ProductImage[]>([]);
     const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
     const [newImagePreviewUrls, setNewImagePreviewUrls] = useState<string[]>([]);
+    const [oversizedFiles, setOversizedFiles] = useState<File[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const router = useRouter();
@@ -53,7 +57,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
     useEffect(() => {
         loadProduct();
-    }, [params.id]);
+    }, [id]);
 
     const loadProduct = async () => {
         try {
@@ -61,7 +65,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             const { data: product, error: productError } = await supabase
                 .from('products')
                 .select('*')
-                .eq('id', params.id)
+                .eq('id', id)
                 .single();
 
             if (productError) throw productError;
@@ -124,14 +128,27 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         });
     };
 
+    const addNewImageFiles = (files: File[]) => {
+        setNewImageFiles(prev => [...prev, ...files]);
+        setNewImagePreviewUrls(prev => [...prev, ...files.map(file => URL.createObjectURL(file))]);
+    };
+
     const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const files = Array.from(e.target.files);
-            setNewImageFiles([...newImageFiles, ...files]);
-            
-            const newPreviewUrls = files.map(file => URL.createObjectURL(file));
-            setNewImagePreviewUrls([...newImagePreviewUrls, ...newPreviewUrls]);
-        }
+        if (!e.target.files) return;
+
+        const files = Array.from(e.target.files);
+        const validFiles = files.filter(file => file.size <= DEFAULT_MAX_SIZE_BYTES);
+        const tooLarge = files.filter(file => file.size > DEFAULT_MAX_SIZE_BYTES);
+
+        if (validFiles.length > 0) addNewImageFiles(validFiles);
+        if (tooLarge.length > 0) setOversizedFiles(tooLarge);
+
+        e.target.value = "";
+    };
+
+    const handleCompressComplete = (compressedFiles: File[]) => {
+        addNewImageFiles(compressedFiles);
+        setOversizedFiles([]);
     };
 
     const removeExistingImage = (imageId: string) => {
@@ -286,7 +303,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     sizes: sizesArray.length > 0 ? sizesArray : null,
                     updated_at: new Date().toISOString()
                 })
-                .eq('id', params.id);
+                .eq('id', id);
 
             if (productError) throw productError;
 
@@ -623,6 +640,13 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 </div>
             </div>
             <Footer />
+
+            <ImageCompressPrompt
+                isOpen={oversizedFiles.length > 0}
+                files={oversizedFiles}
+                onCancel={() => setOversizedFiles([])}
+                onComplete={handleCompressComplete}
+            />
         </>
     );
 }

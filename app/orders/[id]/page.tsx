@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -39,7 +39,8 @@ interface OrderItem {
     };
 }
 
-export default function OrderConfirmationPage({ params }: { params: { id: string } }) {
+export default function OrderConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const [order, setOrder] = useState<Order | null>(null);
     const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -49,7 +50,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
 
     useEffect(() => {
         loadOrder();
-    }, [params.id]);
+    }, [id]);
 
     const loadOrder = async () => {
         try {
@@ -57,7 +58,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
             const { data: orderData, error: orderError } = await supabase
                 .from('orders')
                 .select('*')
-                .eq('id', params.id)
+                .eq('id', id)
                 .single();
 
             if (orderError) throw orderError;
@@ -73,7 +74,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
                         images
                     )
                 `)
-                .eq('order_id', params.id);
+                .eq('order_id', id);
 
             if (itemsError) throw itemsError;
 

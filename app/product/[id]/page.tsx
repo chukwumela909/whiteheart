@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/app/contexts/CartContext";
@@ -21,7 +21,8 @@ interface Product {
     is_active: boolean;
 }
 
-export default function ProductDetailsPage({ params }: { params: { id: string } }) {
+export default function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const [selectedColor, setSelectedColor] = useState(0);
     const [selectedSize, setSelectedSize] = useState("");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -41,14 +42,14 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
 
     useEffect(() => {
         loadProduct();
-    }, [params.id]);
+    }, [id]);
 
     const loadProduct = async () => {
         try {
             const { data, error } = await supabase
                 .from('products')
                 .select('*')
-                .eq('id', params.id)
+                .eq('id', id)
                 .eq('is_active', true)
                 .single();
 

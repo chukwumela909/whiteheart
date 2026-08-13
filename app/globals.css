@@ -38,6 +38,20 @@ body {
   }
 }
 
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
 /* Prevent the Jivo chat widget from covering footer/legal links on larger screens */
 @media (min-width: 768px) {
   /* Keep Jivo visible but move it above footer area on desktop/laptop */

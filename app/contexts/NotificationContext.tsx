@@ -182,22 +182,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     </div>
                 ))}
             </div>
-
-            <style jsx global>{`
-                @keyframes slide-in {
-                    from {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-                .animate-slide-in {
-                    animation: slide-in 0.3s ease-out;
-                }
-            `}</style>
         </NotificationContext.Provider>
     );
 }
