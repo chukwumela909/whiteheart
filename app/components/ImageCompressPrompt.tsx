@@ -11,7 +11,7 @@ interface ImageCompressPromptProps {
     onComplete: (compressedFiles: File[]) => void;
 }
 
-type Status = "prompt" | "compressing" | "done" | "error";
+type Status = "prompt" | "compressing" | "error";
 
 export default function ImageCompressPrompt({
     isOpen,
@@ -23,7 +23,6 @@ export default function ImageCompressPrompt({
     const [status, setStatus] = useState<Status>("prompt");
     const [percent, setPercent] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
-    const [savedBytes, setSavedBytes] = useState(0);
 
     // Thumbnails so the user can see exactly which photos are being touched.
     const thumbnails = useMemo(() => files.map((file) => URL.createObjectURL(file)), [files]);
@@ -45,11 +44,7 @@ export default function ImageCompressPrompt({
                 setPercent(Math.round(fraction * 100))
             );
             setPercent(100);
-            const totalBefore = results.reduce((sum, r) => sum + r.originalSize, 0);
-            const totalAfter = results.reduce((sum, r) => sum + r.compressedSize, 0);
-            setSavedBytes(totalBefore - totalAfter);
-            setStatus("done");
-            setTimeout(() => onComplete(results.map((r) => r.file)), 900);
+            onComplete(results.map((r) => r.file));
         } catch (error: any) {
             setStatus("error");
             setErrorMessage(error.message || "Compression failed. Please try a smaller image.");
@@ -110,20 +105,6 @@ export default function ImageCompressPrompt({
                             <p className="text-sm text-gray-500 font-simon mt-1">
                                 Image {Math.min(files.length, Math.floor((percent / 100) * files.length) + 1)} of {files.length}
                             </p>
-                        )}
-                    </div>
-                )}
-
-                {status === "done" && (
-                    <div className="flex flex-col items-center py-6">
-                        <div className="bg-green-100 rounded-full p-3 mb-4">
-                            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                        </div>
-                        <p className="font-semibold font-simon">Done — ready to add</p>
-                        {savedBytes > 0 && (
-                            <p className="text-sm text-gray-500 font-simon mt-1">Saved {formatBytes(savedBytes)}</p>
                         )}
                     </div>
                 )}
