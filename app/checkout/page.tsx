@@ -41,7 +41,6 @@ export default function CheckoutPage() {
     const supabase = createClient();
     
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -66,7 +65,6 @@ export default function CheckoutPage() {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
             setIsAuthenticated(true);
-            setUserId(session.user.id);
             // Pre-fill email if available
             if (session.user.email) {
                 setShippingInfo(prev => ({ ...prev, email: session.user.email! }));
@@ -176,41 +174,15 @@ export default function CheckoutPage() {
         setLoading(true);
 
         try {
-            console.log("Starting order placement...");
-            console.log("User ID:", userId);
-            console.log("Cart items:", cart);
-            
-            // Calculate totals
-            const subtotal = getCartTotal();
-            const shipping = 0; // Free shipping
-            const total = subtotal + shipping;
-
-            console.log("Order totals - Subtotal:", subtotal, "Shipping:", shipping, "Total:", total);
-
-            // Generate order number
-            const orderNumber = `WH${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
-            console.log("Generated order number:", orderNumber);
-
-            let orderData: any = {
-                user_id: userId,
-                order_number: orderNumber,
-                total_amount: total,
-                status: 'pending',
-                payment_status: 'pending',
-                payment_method: 'paystack',
-                contact_info: {
-                    email: shippingInfo.email,
-                    phone: shippingInfo.phone,
-                },
-            };
-
-            // If using saved address, reference it
+            // Resolve the shipping address to snapshot onto the order, same
+            // shape whether it came from a saved address or the new-address form.
+            let shippingAddressId: string | undefined;
+            let shippingAddress;
             if (!useNewAddress && selectedAddressId) {
-                console.log("Using saved address:", selectedAddressId);
                 const selectedAddress = savedAddresses.find(addr => addr.id === selectedAddressId);
                 if (selectedAddress) {
-                    orderData.shipping_address_id = selectedAddressId;
-                    orderData.shipping_address = {
+                    shippingAddressId = selectedAddressId;
+                    shippingAddress = {
                         firstName: selectedAddress.first_name,
                         lastName: selectedAddress.last_name,
                         address: selectedAddress.address_line1 + (selectedAddress.address_line2 ? ', ' + selectedAddress.address_line2 : ''),
@@ -220,9 +192,7 @@ export default function CheckoutPage() {
                     };
                 }
             } else {
-                console.log("Using new address");
-                // Using new address
-                orderData.shipping_address = {
+                shippingAddress = {
                     firstName: shippingInfo.firstName,
                     lastName: shippingInfo.lastName,
                     address: shippingInfo.address,
@@ -233,46 +203,29 @@ export default function CheckoutPage() {
                 };
             }
 
-            console.log("Final order data:", orderData);
+            // Order creation happens server-side (admin client, bypasses RLS) so
+            // the browser never gets direct write access to orders/order_items —
+            // the server resolves user_id from the caller's own session cookie.
+            const orderRes = await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: cart.map(item => ({
+                        product_id: item.product_id,
+                        quantity: item.quantity,
+                        price: item.price,
+                        color: item.color ?? null,
+                        size: item.size ?? null,
+                    })),
+                    contactInfo: { email: shippingInfo.email, phone: shippingInfo.phone },
+                    shippingAddress,
+                    shippingAddressId,
+                }),
+            });
+            const orderResult = await orderRes.json();
 
-            // Create order in database first
-            const { data: order, error: orderError } = await supabase
-                .from('orders')
-                .insert(orderData)
-                .select()
-                .single();
-
-            if (orderError) {
-                console.error("Order creation error:", orderError);
-                console.error("Order data being sent:", orderData);
-                
-                // Show more specific error messages based on the error
-                if (orderError.message.includes('violates foreign key constraint')) {
-                    throw new Error('Invalid address or user information. Please try again.');
-                } else if (orderError.message.includes('null value')) {
-                    throw new Error('Missing required information. Please fill in all fields.');
-                } else {
-                    throw new Error(`Database error: ${orderError.message}`);
-                }
-            }
-
-            // Create order items
-            const orderItems = cart.map(item => ({
-                order_id: order.id,
-                product_id: item.product_id,
-                quantity: item.quantity,
-                price: item.price,
-                color: item.color,
-                size: item.size,
-            }));
-
-            const { error: itemsError } = await supabase
-                .from('order_items')
-                .insert(orderItems);
-
-            if (itemsError) {
-                console.error("Order items error:", itemsError);
-                throw new Error('Failed to add items to order. Please contact support.');
+            if (!orderRes.ok || !orderResult.orderId) {
+                throw new Error(orderResult.error || 'Unable to create your order. Please try again.');
             }
 
             // Hand off to the server to create the Paystack transaction, then
@@ -282,7 +235,7 @@ export default function CheckoutPage() {
             const initRes = await fetch('/api/payments/initialize', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId: order.id }),
+                body: JSON.stringify({ orderId: orderResult.orderId }),
             });
             const initData = await initRes.json();
 
@@ -296,17 +249,7 @@ export default function CheckoutPage() {
 
         } catch (error: any) {
             console.error("Error creating order:", error);
-            
-            // Show specific error message
-            if (error.message) {
-                showError('Order Failed', error.message);
-            } else if (error.code === 'PGRST116') {
-                showError('Authentication Required', 'Please sign in to place an order.');
-            } else if (error.code === '23503') {
-                showError('Invalid Data', 'One or more products in your cart are no longer available.');
-            } else {
-                showError('Order Failed', 'Unable to process your order. Please check your connection and try again.');
-            }
+            showError('Order Failed', error.message || 'Unable to process your order. Please check your connection and try again.');
             setLoading(false);
         }
     };

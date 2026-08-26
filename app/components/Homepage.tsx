@@ -39,7 +39,7 @@ export const Homepage = () => {
             if (error) throw error;
             setProducts(data || []);
         } catch (error) {
-            console.error('Error loading products:', error);
+            console.error('Error loading products:', error instanceof Error ? error.message : error);
         } finally {
             setLoading(false);
         }
