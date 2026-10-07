@@ -5,6 +5,19 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandLogo from "../components/BrandLogo";
 
+interface UserAddress {
+    id: string;
+    first_name: string;
+    last_name: string;
+    address_line1: string;
+    address_line2: string | null;
+    city: string;
+    postal_code: string;
+    phone: string | null;
+    country: string;
+    is_default: boolean;
+}
+
 export default function Profile() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,7 +32,7 @@ export default function Profile() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [addresses, setAddresses] = useState<any[]>([]);
+    const [addresses, setAddresses] = useState<UserAddress[]>([]);
     const router = useRouter();
     const supabase = createClient();
     

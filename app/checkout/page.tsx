@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import { createClient } from "@/lib/supabase/client";
+import {
+    NETWORK_ERROR_MESSAGE,
+    getErrorMessage,
+    isNetworkError,
+} from "@/lib/errors";
 import BrandLogo from "@/app/components/BrandLogo";
 import Link from "next/link";
 
@@ -16,6 +21,17 @@ interface ShippingInfo {
     address: string;
     city: string;
     state: string;
+    postalCode: string;
+    country: string;
+}
+
+interface ShippingAddress {
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    /** Only captured on the new-address form; saved addresses have no state column. */
+    state?: string;
     postalCode: string;
     country: string;
 }
@@ -177,7 +193,7 @@ export default function CheckoutPage() {
             // Resolve the shipping address to snapshot onto the order, same
             // shape whether it came from a saved address or the new-address form.
             let shippingAddressId: string | undefined;
-            let shippingAddress;
+            let shippingAddress: ShippingAddress | undefined;
             if (!useNewAddress && selectedAddressId) {
                 const selectedAddress = savedAddresses.find(addr => addr.id === selectedAddressId);
                 if (selectedAddress) {
@@ -247,9 +263,14 @@ export default function CheckoutPage() {
             // the callback page, so an abandoned payment keeps the cart intact.
             window.location.href = initData.authorization_url;
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error creating order:", error);
-            showError('Order Failed', error.message || 'Unable to process your order. Please check your connection and try again.');
+
+            if (isNetworkError(error)) {
+                showError('Connection Problem', NETWORK_ERROR_MESSAGE);
+            } else {
+                showError('Order Failed', getErrorMessage(error) || 'Unable to process your order. Please check your connection and try again.');
+            }
             setLoading(false);
         }
     };

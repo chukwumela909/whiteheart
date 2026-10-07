@@ -100,7 +100,7 @@ Once you have admin privileges:
 - Product images are stored in Supabase Storage bucket `product-images`
 - Images are automatically uploaded when creating/editing products
 - Supported formats: JPEG, JPG, PNG, WebP, GIF
-- Maximum file size: 5MB per image
+- Maximum file size: 10MB per image
 - Images are publicly accessible for customer viewing
 
 ### Product Workflow
@@ -170,7 +170,9 @@ Once you have products:
 - Check browser console for any errors
 
 ### Image Upload Fails
-- Ensure file size is under 5MB
+- Ensure file size is under 10MB — over the limit, Storage returns "The object
+  exceeded the maximum allowed size" and the form reports it as a product error.
+  Raise the limit with `storage_bucket_limit_update.sql` if you need more headroom.
 - Check file format (JPEG, PNG, WebP, GIF only)
 - Verify storage bucket exists in Supabase
 

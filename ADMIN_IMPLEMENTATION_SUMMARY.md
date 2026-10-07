@@ -54,7 +54,7 @@
 ### 4. Database & Storage Setup
 **Storage Bucket:**
 - ✅ Created `product-images` bucket in Supabase Storage
-- ✅ Set 5MB file size limit
+- ✅ Set 10MB file size limit
 - ✅ Allowed mime types: JPEG, JPG, PNG, WebP, GIF
 
 **Storage Policies:**
