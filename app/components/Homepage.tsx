@@ -241,7 +241,7 @@ export const Homepage = () => {
                             </p>
                             <div className="flex flex-wrap justify-center gap-3">
                                 {[
-                                    { label: "Instagram", href: "https://www.instagram.com/white.heart_outfits" },
+                                    { label: "Instagram", href: "https://www.instagram.com/whiteheartconcepts" },
                                     { label: "TikTok", href: "https://www.tiktok.com/@whiteheart_outfits" },
                                     { label: "Pinterest", href: "https://pin.it/7ptAQ8aEP" },
                                     { label: "WhatsApp", href: "https://wa.me/+2349035910744" },

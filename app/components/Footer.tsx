@@ -74,7 +74,7 @@ const Footer = () => {
                                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="black"/>
                                 </svg>
                             </Link>
-                            <Link href="https://www.instagram.com/white.heart_outfits?igsh=bnBlNjg5Nm9ieXh4" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
+                            <Link href="https://www.instagram.com/whiteheartconcepts" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <rect x="2" y="2" width="20" height="20" rx="5" stroke="black" strokeWidth="1.5"/>
                                     <circle cx="12" cy="12" r="4" stroke="black" strokeWidth="1.5"/>
@@ -138,7 +138,7 @@ const Footer = () => {
                     </Link>
 
                     {/* Instagram */}
-                    <Link href="https://www.instagram.com/white.heart_outfits?igsh=bnBlNjg5Nm9ieXh4" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
+                    <Link href="https://www.instagram.com/whiteheartconcepts" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-70 transition-opacity">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="2" y="2" width="20" height="20" rx="5" stroke="black" strokeWidth="1.5"/>
                             <circle cx="12" cy="12" r="4" stroke="black" strokeWidth="1.5"/>
