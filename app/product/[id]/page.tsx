@@ -6,6 +6,7 @@ import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { availableQuantity, isSoldOut } from "@/lib/stock";
 
 interface Product {
     id: string;
@@ -37,7 +38,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
     
     const router = useRouter();
     const supabase = createClient();
-    const { addToCart } = useCart();
+    const { cart, addToCart } = useCart();
     const { showSuccess, showError } = useNotification();
 
     useEffect(() => {
@@ -69,9 +70,10 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                 setProductImages([data.image_url]);
             }
             
-            // Set first size as default if available
+            // Default to the first size that's actually in stock
             if (data.sizes && data.sizes.length > 0) {
-                setSelectedSize(data.sizes[0].name);
+                const firstInStock = data.sizes.find((s: { name: string; stock: number }) => Number(s.stock) > 0);
+                setSelectedSize(firstInStock ? firstInStock.name : "");
             }
         } catch (err) {
             console.error('Error loading product:', err);
@@ -80,6 +82,25 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
             setLoading(false);
         }
     };
+
+    // Stock for the current selection. Products with sizes are tracked per size.
+    const hasSizes = !!product?.sizes && product.sizes.length > 0;
+    const soldOut = product ? isSoldOut(product) : false;
+    const available = product ? availableQuantity(product, hasSizes ? selectedSize : null) : 0;
+    const inBag = product
+        ? cart
+              .filter((item) => item.product_id === product.id && (!hasSizes || item.size === selectedSize))
+              .reduce((sum, item) => sum + item.quantity, 0)
+        : 0;
+    const stockLabel = soldOut
+        ? "Sold out"
+        : hasSizes && !selectedSize
+            ? "Choose a size"
+            : available === 0
+                ? "Sold out in this size"
+                : available <= 5
+                    ? `Only ${available} left`
+                    : "In stock";
 
     // Minimum swipe distance (in px)
     const minSwipeDistance = 50;
@@ -340,8 +361,14 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                     {product.category}
                                 </span>
                             )}
-                            <span className="px-4 py-2 border text-black border-black rounded-full text-xs font-simon tracking-wide">
-                                {product.stock_quantity} in stock
+                            <span
+                                className={`px-4 py-2 border rounded-full text-xs font-simon tracking-wide ${
+                                    soldOut || (hasSizes && selectedSize && available === 0)
+                                        ? "text-red-700 border-red-700"
+                                        : "text-black border-black"
+                                }`}
+                            >
+                                {stockLabel}
                             </span>
                         </div>
 
@@ -384,9 +411,9 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                         <button
                                             key={size.name}
                                             onClick={() => setSelectedSize(size.name)}
-                                            disabled={size.stock === 0}
+                                            disabled={Number(size.stock) <= 0}
                                             className={`py-3 border transition-all font-simon text-sm ${
-                                                size.stock === 0
+                                                Number(size.stock) <= 0
                                                     ? "border-gray-200 text-gray-400 cursor-not-allowed line-through"
                                                     : selectedSize === size.name
                                                         ? "border-black bg-black text-white"
@@ -406,8 +433,21 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                 if (!product) return;
                                 
                                 // Check if size is required and selected
-                                if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+                                if (hasSizes && !selectedSize) {
                                     showError("Size Required", "Please select a size before adding to cart");
+                                    return;
+                                }
+
+                                if (available <= 0) {
+                                    showError("Sold Out", `${product.name} is sold out${hasSizes ? " in this size" : ""}.`);
+                                    return;
+                                }
+
+                                if (inBag >= available) {
+                                    showError(
+                                        "No More Stock",
+                                        `You already have ${inBag} in your bag, which is all we have${hasSizes ? ` in size ${selectedSize}` : ""}.`
+                                    );
                                     return;
                                 }
 
@@ -429,14 +469,14 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                 setAddedToCart(true);
                                 setTimeout(() => setAddedToCart(false), 2000);
                             }}
-                            disabled={!product || (product.sizes && product.sizes.length > 0 && !selectedSize)}
+                            disabled={!product || (hasSizes && !selectedSize) || available <= 0}
                             className={`w-full rounded-md text-white py-4 font-walter font-bold text-lg tracking-wide transition-colors ${
                                 addedToCart 
                                     ? "bg-green-600 hover:bg-green-700" 
                                     : "bg-[#A08B7A] hover:bg-[#8B7A6A]"
                             } disabled:bg-gray-300 disabled:cursor-not-allowed`}
                         >
-                            {addedToCart ? "Added to Bag ✓" : "Add to Bag"}
+                            {addedToCart ? "Added to Bag ✓" : soldOut ? "Sold Out" : "Add to Bag"}
                         </button>
                     </div>
                 </div>

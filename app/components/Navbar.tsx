@@ -243,7 +243,7 @@ export default function Navbar({ transparent = false }: NavbarProps) {
 
             {!transparent && (
                 <div className="bg-black text-white text-center py-1 text-xs font-medium tracking-wider w-full">
-                    FREE SHIPPING. FREE RETURNS.
+                    FREE DELIVERY ON EVERY ORDER
                 </div>
             )}
 

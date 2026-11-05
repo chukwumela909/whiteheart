@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import { categoryKey, matchesCategory } from "@/lib/categories";
+import { isSoldOut } from "@/lib/stock";
 
 interface Product {
     id: string;
@@ -15,12 +18,32 @@ interface Product {
     category: string;
     colors: { name: string; hex: string }[] | null;
     stock_quantity: number;
+    sizes: { name: string; stock: number }[] | null;
 }
 
+const Spinner = () => (
+    <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+    </div>
+);
+
+// useSearchParams needs a Suspense boundary in the App Router.
 export default function ShopPage() {
+    return (
+        <Suspense fallback={<Spinner />}>
+            <ShopContent />
+        </Suspense>
+    );
+}
+
+function ShopContent() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    // The category lives in the URL (/shop?category=caps) so homepage tiles
+    // and shared links open the right filter.
+    const selectedCategory = categoryKey(searchParams.get("category")) || "all";
     const [sortBy, setSortBy] = useState<string>("default");
 
     const supabase = createClient();
@@ -48,8 +71,24 @@ export default function ShopPage() {
         }
     };
 
-    // Get unique categories
-    const categories = ["all", ...Array.from(new Set(products.map(p => p.category)))];
+    // One filter per category, even if it was typed differently on different
+    // products ("Caps" / "caps "). The first spelling seen is used as the label.
+    const categories: { key: string; label: string }[] = [{ key: "all", label: "All" }];
+    for (const p of products) {
+        const key = categoryKey(p.category);
+        if (key && !categories.some((c) => c.key === key)) {
+            categories.push({ key, label: p.category.trim() });
+        }
+    }
+
+    const selectCategory = (key: string) => {
+        router.replace(key === "all" ? "/shop" : `/shop?category=${encodeURIComponent(key)}`, { scroll: false });
+    };
+
+    const isActiveCategory = (cat: { key: string; label: string }) =>
+        cat.key === "all"
+            ? selectedCategory === "all"
+            : selectedCategory !== "all" && matchesCategory(cat.label, selectedCategory);
 
     // Filter and sort products
     const getFilteredAndSortedProducts = () => {
@@ -57,7 +96,7 @@ export default function ShopPage() {
 
         // Filter by category
         if (selectedCategory !== "all") {
-            filtered = filtered.filter(p => p.category === selectedCategory);
+            filtered = filtered.filter(p => matchesCategory(p.category, selectedCategory));
         }
 
         // Sort products
@@ -82,11 +121,7 @@ export default function ShopPage() {
     const displayedProducts = getFilteredAndSortedProducts();
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
@@ -110,15 +145,15 @@ export default function ShopPage() {
                     <div className="flex flex-wrap gap-2">
                         {categories.map((category) => (
                             <button
-                                key={category}
-                                onClick={() => setSelectedCategory(category)}
+                                key={category.key}
+                                onClick={() => selectCategory(category.key)}
                                 className={`px-4 py-2 rounded-full text-sm font-simon transition-colors ${
-                                    selectedCategory === category
+                                    isActiveCategory(category)
                                         ? "bg-black text-white"
                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                 }`}
                             >
-                                {category.charAt(0).toUpperCase() + category.slice(1)}
+                                {category.label.charAt(0).toUpperCase() + category.label.slice(1)}
                             </button>
                         ))}
                     </div>
@@ -217,9 +252,9 @@ export default function ShopPage() {
                                         )}
 
                                         {/* Out of stock badge */}
-                                        {product.stock_quantity === 0 && (
+                                        {isSoldOut(product) && (
                                             <div className="absolute top-2 right-2 bg-black text-white px-3 py-1 rounded-full text-xs font-simon">
-                                                Out of Stock
+                                                Sold Out
                                             </div>
                                         )}
                                     </div>
