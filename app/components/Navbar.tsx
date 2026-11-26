@@ -5,9 +5,15 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/app/contexts/CartContext";
 import BrandLogo from "./BrandLogo";
+import { grotesk } from "./landingFonts";
 
 interface NavbarProps {
     transparent?: boolean;
+    /**
+     * "hero" is the minimal white bar that sits over the homepage hero image.
+     * "shop" is the black bar with the logo in the middle, used on the shop page.
+     */
+    variant?: "default" | "hero" | "shop";
 }
 
 interface Product {
@@ -19,8 +25,11 @@ interface Product {
     category: string;
 }
 
-export default function Navbar({ transparent = false }: NavbarProps) {
+export default function Navbar({ transparent = false, variant = "default" }: NavbarProps) {
+    const isHero = variant === "hero";
+    const isShop = variant === "shop";
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -96,6 +105,21 @@ export default function Navbar({ transparent = false }: NavbarProps) {
 
         return () => clearTimeout(debounce);
     }, [searchQuery, supabase]);
+
+    // Hero menu: close on Escape and stop the page scrolling behind it
+    useEffect(() => {
+        if (!isMenuOpen) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setIsMenuOpen(false);
+        };
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        window.addEventListener("keydown", onKey);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            window.removeEventListener("keydown", onKey);
+        };
+    }, [isMenuOpen]);
 
     const handleSearchClose = () => {
         setIsSearchOpen(false);
@@ -241,12 +265,217 @@ export default function Navbar({ transparent = false }: NavbarProps) {
                 </div>
             </div>
 
-            {!transparent && (
+            {!transparent && !isHero && !isShop && (
                 <div className="bg-black text-white text-center py-1 text-xs font-medium tracking-wider w-full">
                     FREE DELIVERY ON EVERY ORDER
                 </div>
             )}
 
+            {isShop && (
+                <div
+                    className={`${grotesk.className} flex h-7 w-full items-center justify-center bg-[#fc0420] px-3 text-center text-[11px] font-bold uppercase tracking-[0.08em] text-white`}
+                >
+                    Free delivery on every order
+                </div>
+            )}
+
+            {isHero || isShop ? (
+                <>
+                    {isShop ? (
+                    <nav aria-label="Main" className={`${grotesk.className} bg-black text-white`}>
+                        <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center px-4 md:h-[88px] md:px-[42px]">
+                            <div className="flex items-center justify-self-start">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsMenuOpen(true)}
+                                    aria-label="Open menu"
+                                    aria-expanded={isMenuOpen}
+                                    className="group -ml-2 flex h-11 w-11 flex-col items-center justify-center gap-[5px] lg:hidden"
+                                >
+                                    <span className="block h-px w-6 bg-white" />
+                                    <span className="block h-px w-6 bg-white" />
+                                    <span className="block h-px w-6 bg-white" />
+                                </button>
+                                <div className="hidden items-center gap-x-12 pl-[25px] text-[13px] font-semibold uppercase tracking-[0.02em] lg:flex xl:gap-x-[88px]">
+                                    <Link href="/shop" className="transition-opacity hover:opacity-70">
+                                        Shop all
+                                    </Link>
+                                    <Link href="/shop?category=headwear" className="transition-opacity hover:opacity-70">
+                                        Headwear
+                                    </Link>
+                                    <a
+                                        href="https://wa.me/qr/ZLOYJC5K3GZXG1"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="whitespace-nowrap transition-opacity hover:opacity-70"
+                                    >
+                                        Customer service
+                                    </a>
+                                </div>
+                            </div>
+                            <Link href="/" aria-label="Whiteheart home" className="transition-opacity hover:opacity-85">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/landing/wh-logo-white.png"
+                                    alt="Whiteheart"
+                                    width={640}
+                                    height={323}
+                                    className="h-11 w-auto md:h-[3.75rem]"
+                                />
+                            </Link>
+                            <div className="flex items-center gap-4 justify-self-end md:gap-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSearchOpen(!isSearchOpen)}
+                                    aria-label="Search"
+                                    aria-expanded={isSearchOpen}
+                                    className="flex h-11 items-center gap-3 transition-opacity hover:opacity-70 xl:h-[38px] xl:w-[156px] xl:border xl:border-white xl:px-3 xl:hover:opacity-100"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+                                        <circle cx="10.5" cy="10.5" r="6.5" />
+                                        <path d="M15.5 15.5 21 21" />
+                                    </svg>
+                                    <span className="hidden text-sm tracking-[0.06em] text-white/90 xl:block">Search...</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleAccountClick}
+                                    aria-label={isAuthenticated ? "My orders" : "Sign in"}
+                                    className="hidden h-11 items-center transition-opacity hover:opacity-70 sm:flex"
+                                >
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+                                        <circle cx="12" cy="7.5" r="4" />
+                                        <path d="M4.5 21v-1.5a5 5 0 0 1 5-5h5a5 5 0 0 1 5 5V21" />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCartOpen(true)}
+                                    aria-label={`Bag, ${getCartCount()} items`}
+                                    className="relative flex h-11 items-center transition-opacity hover:opacity-70"
+                                >
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden="true">
+                                        <path d="M5 8h14v13H5z" />
+                                        <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+                                    </svg>
+                                    {getCartCount() > 0 && (
+                                        <span className="absolute -right-2 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold leading-none text-black">
+                                            {getCartCount()}
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+                    ) : (
+                    <nav aria-label="Main" className={`${grotesk.className} text-white`}>
+                        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-5 pt-4 md:grid-cols-4 md:gap-x-2.5 md:pt-3.5">
+                            <Link
+                                href="/"
+                                aria-label="Whiteheart home"
+                                className="justify-self-start transition-opacity hover:opacity-85 md:col-span-2"
+                            >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/landing/wh-logo-white.png"
+                                    alt="Whiteheart"
+                                    width={640}
+                                    height={323}
+                                    className="h-12 w-auto md:h-[3.25rem]"
+                                />
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => setIsMenuOpen(true)}
+                                aria-label="Open menu"
+                                aria-expanded={isMenuOpen}
+                                className="group flex h-11 w-14 flex-col justify-center gap-1 md:w-[114px] md:justify-self-start"
+                            >
+                                <span className="block h-px w-full bg-white transition-transform duration-300 group-hover:-translate-y-0.5" />
+                                <span className="block h-px w-full bg-white transition-transform duration-300 group-hover:translate-y-0.5" />
+                            </button>
+                            <div className="flex items-center gap-5 justify-self-end text-sm font-semibold uppercase leading-[1.1]">
+                                <Link href="/shop" className="hidden transition-opacity hover:opacity-70 sm:block">
+                                    Shop now
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCartOpen(true)}
+                                    aria-label={`Cart, ${getCartCount()} items`}
+                                    className="uppercase transition-opacity hover:opacity-70"
+                                >
+                                    Cart{getCartCount() > 0 ? ` (${getCartCount()})` : ""}
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+                    )}
+
+                    {isMenuOpen && (
+                        <div
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Menu"
+                            className={`${grotesk.className} fixed inset-0 z-50 flex flex-col bg-neutral-950 text-white`}
+                        >
+                            <div className="flex items-center justify-between px-5 pt-4 md:pt-3.5">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/landing/wh-logo-white.png"
+                                    alt="Whiteheart"
+                                    width={640}
+                                    height={323}
+                                    className="h-12 w-auto md:h-[3.25rem]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    autoFocus
+                                    className="text-sm font-semibold uppercase transition-opacity hover:opacity-70"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                            <div className="flex flex-1 flex-col justify-end gap-1 px-5 pb-8 text-[clamp(2rem,5.5vw,4.5rem)] font-semibold uppercase leading-[1.02] tracking-[-0.035em] md:pb-10">
+                                <Link href="/shop" onClick={() => setIsMenuOpen(false)} className="w-fit text-white/60 transition-colors hover:text-white">
+                                    Shop all
+                                </Link>
+                                <Link href="/shop?category=headwear" onClick={() => setIsMenuOpen(false)} className="w-fit text-white/60 transition-colors hover:text-white">
+                                    Headwear
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsMenuOpen(false);
+                                        setIsSearchOpen(true);
+                                    }}
+                                    className="w-fit text-left uppercase text-white/60 transition-colors hover:text-white"
+                                >
+                                    Search
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsMenuOpen(false);
+                                        handleAccountClick();
+                                    }}
+                                    className="w-fit text-left uppercase text-white/60 transition-colors hover:text-white"
+                                >
+                                    {isAuthenticated ? "My orders" : "Sign in"}
+                                </button>
+                                <a
+                                    href="https://wa.me/qr/ZLOYJC5K3GZXG1"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-fit text-white/60 transition-colors hover:text-white"
+                                >
+                                    Customer service
+                                </a>
+                            </div>
+                        </div>
+                    )}
+                </>
+            ) : (
             <nav className={`${transparent ? 'bg-transparent border-none' : 'bg-white border-b border-gray-200'}`}>
                 <div className="flex items-center py-4 px-8 md:px-12">
                     <div className="flex items-center space-x-12">
@@ -296,6 +525,7 @@ export default function Navbar({ transparent = false }: NavbarProps) {
                     </div>
                 </div>
             </nav>
+            )}
 
             {/* Search Bar */}
             {isSearchOpen && (

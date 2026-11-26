@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useMemo, use } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/app/contexts/CartContext";
@@ -7,6 +7,7 @@ import { useNotification } from "@/app/contexts/NotificationContext";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { availableQuantity, isSoldOut } from "@/lib/stock";
+import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
 
 interface Product {
     id: string;
@@ -102,15 +103,25 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                     ? `Only ${available} left`
                     : "In stock";
 
+    // Gallery: on-model photos first (when the product has them), then the product's own photos
+    const hasShots = !!MODEL_SHOTS[id]?.length;
+    const gallery = useMemo(
+        () => [
+            ...(MODEL_SHOTS[id] ?? []).map((shot) => ({ src: shotSrc(shot), srcSet: shotSrcSet(shot) as string | undefined })),
+            ...productImages.map((src) => ({ src, srcSet: undefined as string | undefined })),
+        ],
+        [id, productImages]
+    );
+
     // Minimum swipe distance (in px)
     const minSwipeDistance = 50;
 
     const handlePrevImage = () => {
-        setCurrentImageIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1));
+        setCurrentImageIndex((prev) => (prev === 0 ? gallery.length - 1 : prev - 1));
     };
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
+        setCurrentImageIndex((prev) => (prev === gallery.length - 1 ? 0 : prev + 1));
     };
 
     const onTouchStart = (e: React.TouchEvent) => {
@@ -276,22 +287,37 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                     {/* Left Side - Product Images */}
                     <div className="relative ">
                         <div 
-                            className="relative aspect-[4/3] flex items-center justify-center overflow-hidden touch-pan-y select-none"
+                            className={`relative flex items-center justify-center overflow-hidden touch-pan-y select-none ${hasShots ? "" : "aspect-[4/3]"}`}
                             onTouchStart={onTouchStart}
                             onTouchMove={onTouchMove}
                             onTouchEnd={onTouchEnd}
                         >
-                            {productImages.length > 0 ? (
+                            {gallery.length > 0 ? (
                                 <>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={productImages[currentImageIndex]}
-                                        alt={`${product.name} - Image ${currentImageIndex + 1}`}
-                                        className="w-full h-72 mb-10 object-contain pointer-events-none"
-                                    />
+                                    {hasShots ? (
+                                        /* Tall 2:3 frame, the shape of the model photos */
+                                        <div className="relative mb-6 aspect-[2/3] w-full max-w-[520px] overflow-hidden bg-[#f1f1f1] lg:h-[min(780px,calc(100vh-240px))] lg:min-h-[480px] lg:w-auto lg:max-w-none">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                key={gallery[currentImageIndex].src}
+                                                src={gallery[currentImageIndex].src}
+                                                srcSet={gallery[currentImageIndex].srcSet}
+                                                sizes={gallery[currentImageIndex].srcSet ? "(min-width: 1024px) 520px, 100vw" : undefined}
+                                                alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                                className="h-full w-full object-cover pointer-events-none"
+                                            />
+                                        </div>
+                                    ) : (
+                                        /* eslint-disable-next-line @next/next/no-img-element */
+                                        <img
+                                            src={gallery[currentImageIndex].src}
+                                            alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                            className="w-full h-72 mb-10 object-contain pointer-events-none"
+                                        />
+                                    )}
                                     
                                     {/* Navigation Arrows - show only if multiple images */}
-                                    {productImages.length > 1 && (
+                                    {gallery.length > 1 && (
                                         <>
                                             <button
                                                 onClick={handlePrevImage}
@@ -324,9 +350,9 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                         </div>
                         
                         {/* Thumbnail indicator dots - show only if multiple images */}
-                        {productImages.length > 1 && (
+                        {gallery.length > 1 && (
                             <div className="flex justify-center gap-2">
-                                {productImages.map((_, index) => (
+                                {gallery.map((_, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setCurrentImageIndex(index)}

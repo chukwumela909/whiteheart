@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import HomeHero from "./HomeHero";
 import Link from "next/link";
 
 interface ProductItem {
@@ -17,10 +17,8 @@ interface ProductItem {
 }
 
 export const Homepage = () => {
-    const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [products, setProducts] = useState<ProductItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const videoRef = useRef<HTMLVideoElement>(null);
     const supabase = createClient();
 
     useEffect(() => {
@@ -45,55 +43,15 @@ export const Homepage = () => {
         }
     };
 
-    const handleTogglePlayPause = useCallback(() => {
-        const video = videoRef.current;
-        if (!video) return;
-        if (video.paused) {
-            video.play();
-            setIsPlaying(true);
-        } else {
-            video.pause();
-            setIsPlaying(false);
-        }
-    }, []);
-
     return (
-        <div className="bg-white w-full">
-            <div className="bg-black text-white text-center py-1 text-xs font-medium tracking-wider w-full">
-                FREE DELIVERY ON EVERY ORDER
+        <div className="relative bg-white w-full">
+            <div className="absolute left-0 right-0 top-0 z-20">
+                <Navbar variant="hero" transparent />
             </div>
 
-            <nav className="absolute left-0 right-0 z-10">
-                <Navbar transparent={true} />
-            </nav>
+            <HomeHero />
 
-            <div className="relative h-[80vh] w-full overflow-hidden">
-                <video
-                    ref={videoRef}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    src="/hero.mp4"
-                    poster="/hero-poster.jpg"
-                    preload="metadata"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    aria-label="Whiteheart hero background video"
-                />
-                <div className="absolute inset-0 bg-black/10" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center">
-                    <h1 className="text-5xl md:text-7xl font-walter font-extrabold mb-2 tracking-tight">Summer Essentials</h1>
-                    <p className="text-lg md:text-md font-simon uppercase mb-10 font-light tracking-wider">EQUIPMENT FOR ALL PURSUITS</p>
-                    <Link href="/shop" className="bg-white text-black uppercase font-walter font-extrabold tracking-wider py-1 px-6 rounded-full hover:bg-gray-200 transition-colors text-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" tabIndex={0} aria-label="Shop Summer Essentials">SHOP</Link>
-                </div>
-                <button onClick={handleTogglePlayPause} aria-label={isPlaying ? "Pause background video" : "Play background video"} tabIndex={0} className="absolute bottom-10 right-10 text-white focus:outline-none hover:opacity-80 transition-opacity">
-                    {isPlaying ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    )}
-                </button>
-            </div>
+            <div id="after-hero" className="scroll-mt-0" />
 
             <div className="relative bg-white w-full flex justify-between content-between flex-col">
                 <div className="flex-1 flex flex-col w-full pt-10 pb-4">
