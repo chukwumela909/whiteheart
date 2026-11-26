@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { grotesk, serif } from "./landingFonts";
+import heroPlaceholders from "@/lib/heroPlaceholders.json";
+
+// Each hero image is exported at these widths (WebP); the browser picks the one that fits the screen.
+const HERO_WIDTHS = [828, 1280, 1920, 2400];
+const heroSrcSet = (image: string) => HERO_WIDTHS.map((w) => `${image}-${w}.webp ${w}w`).join(", ");
+const PLACEHOLDERS: Record<string, string> = heroPlaceholders;
 
 type Slide = {
     image: string;
@@ -59,6 +65,16 @@ export default function HomeHero() {
     };
     const reducedMotion = useRef(false);
 
+    // Only the opening image downloads with the page. The other slides start once it has arrived,
+    // so they never compete with it on a slow connection.
+    const [restReady, setRestReady] = useState(false);
+    const firstImage = useRef<HTMLImageElement | null>(null);
+    useEffect(() => {
+        if (firstImage.current?.complete) setRestReady(true);
+        const fallback = setTimeout(() => setRestReady(true), 5000);
+        return () => clearTimeout(fallback);
+    }, []);
+
     useEffect(() => {
         reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }, []);
@@ -100,13 +116,22 @@ export default function HomeHero() {
             onBlur={() => setPaused(false)}
         >
             {/* Images: the new slide drops down from the top over the old one. Clipped in their own box so the zoom never makes the hero scrollable. */}
-            <div className="absolute inset-0 isolate overflow-clip">
-            {SLIDES.map((s, i) => (
+            <div
+                className="absolute inset-0 isolate overflow-clip bg-cover"
+                style={{
+                    backgroundImage: `url(${PLACEHOLDERS[SLIDES[0].image.split("/").pop() as string]})`,
+                    backgroundPosition: SLIDES[0].focus,
+                }}
+            >
+            {SLIDES.map((s, i) =>
+                i === 0 || restReady || i === active ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                     key={s.image}
-                    src={`${s.image}.jpg`}
-                    srcSet={`${s.image}-1280.jpg 1280w, ${s.image}.jpg 2400w`}
+                    ref={i === 0 ? firstImage : undefined}
+                    onLoad={i === 0 ? () => setRestReady(true) : undefined}
+                    src={`${s.image}-1280.webp`}
+                    srcSet={heroSrcSet(s.image)}
                     sizes="100vw"
                     alt={i === active ? s.alt : ""}
                     aria-hidden={i !== active}
@@ -122,7 +147,8 @@ export default function HomeHero() {
                               : "invisible"
                     }`}
                 />
-            ))}
+                ) : null
+            )}
             </div>
 
             {/* Tint so white type holds on any image */}
@@ -153,7 +179,7 @@ export default function HomeHero() {
                             >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
-                                    src={`${s.image}.jpg`}
+                                    src={`${s.image}-828.webp`}
                                     alt=""
                                     loading="lazy"
                                     decoding="async"

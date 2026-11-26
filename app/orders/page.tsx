@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandLogo from "../components/BrandLogo";
+import { originalOnError, resized } from "@/lib/img";
 
 interface Order {
     id: string;
@@ -365,7 +366,10 @@ export default function Orders() {
                                                         <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
                                                             {imageUrl && (
                                                                 <img
-                                                                    src={imageUrl}
+                                                                    src={resized(imageUrl, 128)}
+                                                                    onError={originalOnError(imageUrl)}
+                                                                    loading="lazy"
+                                                                    decoding="async"
                                                                     alt={item.products.name}
                                                                     className="w-full h-full object-cover object-center"
                                                                 />

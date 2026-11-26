@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { originalOnError, resized } from "@/lib/img";
 
 interface Order {
     id: string;
@@ -159,7 +160,10 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                                     <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
-                                            src={imageUrl}
+                                            src={resized(imageUrl, 256)}
+                                            onError={originalOnError(imageUrl)}
+                                            loading="lazy"
+                                            decoding="async"
                                             alt={item.products.name}
                                             className="w-full h-full object-cover"
                                         />

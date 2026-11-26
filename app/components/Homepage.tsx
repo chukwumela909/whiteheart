@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import HomeHero from "./HomeHero";
 import Link from "next/link";
+import { originalOnError, resized, resizedSet } from "@/lib/img";
 
 interface ProductItem {
     id: string;
@@ -77,7 +78,12 @@ export const Homepage = () => {
                                                     <>
                                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                                         <img 
-                                                            src={product.image_url} 
+                                                            src={resized(product.image_url, 640)} 
+                                                            srcSet={resizedSet(product.image_url, [384, 640])}
+                                                            sizes="(min-width: 768px) 288px, 224px"
+                                                            onError={originalOnError(product.image_url)}
+                                                            loading="lazy"
+                                                            decoding="async"
                                                             alt={product.name} 
                                                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
                                                         />
@@ -127,7 +133,7 @@ export const Homepage = () => {
                             <Link key={cat.title} href={cat.href} className="relative group overflow-hidden block">
                                 <div className="relative aspect-[4/5] overflow-hidden">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={cat.img} alt={`${cat.title} collection`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    <img src={resized(cat.img, 828)} srcSet={resizedSet(cat.img, [640, 828, 1080])} sizes="(min-width: 768px) 33vw, 100vw" loading="lazy" decoding="async" alt={`${cat.title} collection`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                     <div className="absolute inset-0 bg-black/20" />
                                     <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white text-center">
                                         <h3 className="text-4xl md:text-5xl font-walter font-extrabold mb-2 tracking-tight">{cat.title}</h3>
@@ -154,7 +160,7 @@ export const Homepage = () => {
                             <Link key={cat.title} href={cat.href} className="relative group overflow-hidden block">
                                 <div className="relative aspect-[4/5] overflow-hidden">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={cat.img} alt={`${cat.title} collection`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    <img src={resized(cat.img, 828)} srcSet={resizedSet(cat.img, [640, 828, 1080])} sizes="(min-width: 768px) 33vw, 100vw" loading="lazy" decoding="async" alt={`${cat.title} collection`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                     <div className="absolute inset-0 bg-black/20" />
                                     <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white text-center">
                                         <h3 className="text-4xl md:text-5xl font-walter font-extrabold mb-2 tracking-tight">{cat.title}</h3>
@@ -176,7 +182,11 @@ export const Homepage = () => {
                         <div className="relative rounded-lg w-full h-full min-h-[400px] lg:min-h-[70vh]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
-                                src="/hero-poster.jpg"
+                                src={resized("/hero-poster.jpg", 1080)}
+                                srcSet={resizedSet("/hero-poster.jpg", [640, 1080, 1920])}
+                                sizes="(min-width: 1024px) 50vw, 100vw"
+                                loading="lazy"
+                                decoding="async"
                                 alt="WhiteHeart tracksuit"
                                 className="absolute inset-0 w-full h-full rounded-lg object-cover transition-transform duration-500 group-hover:scale-105"
                             />

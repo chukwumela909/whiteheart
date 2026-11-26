@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { originalOnError, resized } from "@/lib/img";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -188,7 +189,10 @@ export default function Navbar({ transparent = false, variant = "default" }: Nav
                                         <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
-                                                src={item.image_url}
+                                                src={resized(item.image_url, 256)}
+                                                onError={originalOnError(item.image_url)}
+                                                loading="lazy"
+                                                decoding="async"
                                                 alt={item.name}
                                                 className="w-full h-full object-cover"
                                             />
@@ -588,7 +592,10 @@ export default function Navbar({ transparent = false, variant = "default" }: Nav
                                                     {imageUrl ? (
                                                         /* eslint-disable-next-line @next/next/no-img-element */
                                                         <img
-                                                            src={imageUrl}
+                                                            src={resized(imageUrl, 128)}
+                                                            onError={originalOnError(imageUrl)}
+                                                            loading="lazy"
+                                                            decoding="async"
                                                             alt={product.name}
                                                             className="w-full h-full object-cover"
                                                         />

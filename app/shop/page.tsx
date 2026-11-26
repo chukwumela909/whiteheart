@@ -10,6 +10,7 @@ import { grotesk } from "@/app/components/landingFonts";
 import { categoryKey, matchesCategory } from "@/lib/categories";
 import { isSoldOut } from "@/lib/stock";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
+import { originalOnError, resized, resizedSet } from "@/lib/img";
 
 interface Product {
     id: string;
@@ -454,8 +455,14 @@ function ShopContent() {
                         <ul className={`grid gap-x-[5px] gap-y-10 md:gap-x-[7px] md:gap-y-14 ${gridClass}`}>
                             {pageProducts.map((product, index) => {
                                 const shots = MODEL_SHOTS[product.id];
-                                const imageUrl = shots?.[0] ? shotSrc(shots[0]) : product.images?.[0] || product.image_url;
-                                const secondImageUrl = shots?.[1] ? shotSrc(shots[1]) : product.images?.[1];
+                                // Products without model photos fall back to their own photos, resized for the tile
+                                const TILE_WIDTHS = [384, 640, 828, 1080];
+                                const ownFirst = product.images?.[0] || product.image_url;
+                                const ownSecond = product.images?.[1];
+                                const imageUrl = shots?.[0] ? shotSrc(shots[0]) : ownFirst && resized(ownFirst, 640);
+                                const secondImageUrl = shots?.[1] ? shotSrc(shots[1]) : ownSecond && resized(ownSecond, 640);
+                                const firstSrcSet = shots?.[0] ? shotSrcSet(shots[0]) : ownFirst ? resizedSet(ownFirst, TILE_WIDTHS) : undefined;
+                                const secondSrcSet = shots?.[1] ? shotSrcSet(shots[1]) : ownSecond ? resizedSet(ownSecond, TILE_WIDTHS) : undefined;
                                 const soldOut = isSoldOut(product);
                                 const sizes = product.sizes ?? [];
 
@@ -480,8 +487,9 @@ function ShopContent() {
                                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                                         <img
                                                             src={imageUrl}
-                                                            srcSet={shots?.[0] ? shotSrcSet(shots[0]) : undefined}
-                                                            sizes={shots?.[0] ? tileSizes : undefined}
+                                                            srcSet={firstSrcSet}
+                                                            sizes={firstSrcSet ? tileSizes : undefined}
+                                                            onError={!shots?.[0] && ownFirst ? originalOnError(ownFirst) : undefined}
                                                             alt={product.name.trim()}
                                                             loading={index < 4 ? "eager" : "lazy"}
                                                             fetchPriority={index < 4 ? "high" : "auto"}
@@ -494,8 +502,8 @@ function ShopContent() {
                                                             /* eslint-disable-next-line @next/next/no-img-element */
                                                             <img
                                                                 src={secondImageUrl}
-                                                                srcSet={shots?.[1] ? shotSrcSet(shots[1]) : undefined}
-                                                                sizes={shots?.[1] ? tileSizes : undefined}
+                                                                srcSet={secondSrcSet}
+                                                                sizes={secondSrcSet ? tileSizes : undefined}
                                                                 alt=""
                                                                 decoding="async"
                                                                 onLoad={() => markHoverReady(product.id)}

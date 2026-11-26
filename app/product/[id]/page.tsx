@@ -8,6 +8,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { availableQuantity, isSoldOut } from "@/lib/stock";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
+import { originalOnError, resized, resizedSet } from "@/lib/img";
 
 interface Product {
     id: string;
@@ -111,8 +112,15 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                 src: shotSrc(shot),
                 srcSet: shotSrcSet(shot) as string | undefined,
                 placeholder: shot.placeholder,
+                original: undefined as string | undefined,
             })),
-            ...productImages.map((src) => ({ src, srcSet: undefined as string | undefined, placeholder: undefined as string | undefined })),
+            // The product's own photos, resized: the originals are 1.4–1.7 MB each
+            ...productImages.map((src) => ({
+                src: resized(src, 1080),
+                srcSet: resizedSet(src, [640, 828, 1080, 1920]),
+                placeholder: undefined as string | undefined,
+                original: src as string | undefined,
+            })),
         ],
         [id, productImages]
     );
@@ -314,6 +322,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                                 srcSet={gallery[currentImageIndex].srcSet}
                                                 sizes={gallery[currentImageIndex].srcSet ? "(min-width: 1024px) 520px, 100vw" : undefined}
                                                 alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                                onError={gallery[currentImageIndex].original ? originalOnError(gallery[currentImageIndex].original as string) : undefined}
                                                 fetchPriority="high"
                                                 decoding="async"
                                                 className="h-full w-full object-cover pointer-events-none"
@@ -322,8 +331,12 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                     ) : (
                                         /* eslint-disable-next-line @next/next/no-img-element */
                                         <img
+                                            key={gallery[currentImageIndex].src}
                                             src={gallery[currentImageIndex].src}
+                                            srcSet={gallery[currentImageIndex].srcSet}
+                                            sizes={gallery[currentImageIndex].srcSet ? "(min-width: 1024px) 50vw, 100vw" : undefined}
                                             alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                                onError={gallery[currentImageIndex].original ? originalOnError(gallery[currentImageIndex].original as string) : undefined}
                                             className="w-full h-72 mb-10 object-contain pointer-events-none"
                                         />
                                     )}

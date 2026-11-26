@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: fs.realpathSync(__dirname),
   },
+  // The built-in resizer (/_next/image) may fetch the store's product photos from Supabase.
+  // Each upload gets a unique file name, so a resized copy can be kept for a month.
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "evzecjzuvqzpzjrclnny.supabase.co", pathname: "/storage/v1/object/public/**" },
+    ],
+    minimumCacheTTL: 2678400,
+  },
   // Model and hero photos rarely change: let browsers keep them for a week instead of
   // checking with the server on every visit, and reuse a stale copy while re-checking.
   async headers() {

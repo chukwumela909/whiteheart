@@ -12,6 +12,7 @@ import {
 } from "@/lib/errors";
 import BrandLogo from "@/app/components/BrandLogo";
 import Link from "next/link";
+import { originalOnError, resized } from "@/lib/img";
 
 interface ShippingInfo {
     firstName: string;
@@ -581,7 +582,10 @@ export default function CheckoutPage() {
                                         <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
-                                                src={item.image_url}
+                                                src={resized(item.image_url, 256)}
+                                                onError={originalOnError(item.image_url)}
+                                                loading="lazy"
+                                                decoding="async"
                                                 alt={item.name}
                                                 className="w-full h-full object-cover"
                                             />
