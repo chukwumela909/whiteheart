@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import Navbar from "../../components/Navbar";
+import { GROTESK_PRELOAD } from "../../components/landingFonts";
 import Footer from "../../components/Footer";
 import { availableQuantity, isSoldOut } from "@/lib/stock";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
@@ -161,7 +162,11 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
 
     return (
         <div className="min-h-screen bg-white">
-            <Navbar />
+            {/* Same black header as the shop page; it stays in view while the page scrolls */}
+            <link rel="preload" href={GROTESK_PRELOAD} as="font" type="font/woff2" crossOrigin="anonymous" />
+            <div className="sticky top-0 z-40">
+                <Navbar variant="shop" />
+            </div>
 
             {loading ? (
                 <div className="max-w-7xl mx-auto px-5 py-20">
