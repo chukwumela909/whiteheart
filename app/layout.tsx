@@ -1,31 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Dancing_Script, Lato } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import JivoWidget from "./components/JivoWidget";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const dancingScript = Dancing_Script({
-  variable: "--font-dancing-script",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", ],
-});
-
-const lato = Lato({
-  variable: "--font-lato",
-  subsets: ["latin"],
-  weight: ["100", "300", "400", "700", "900"],
-});
+// Fonts are bundled in /public/fonts and declared in globals.css (no download at build time).
 
 export const metadataBase = new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
 
@@ -73,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${dancingScript.variable} ${lato.variable} antialiased`}
+        className="antialiased"
       >
         <NotificationProvider>
           <CartProvider>
