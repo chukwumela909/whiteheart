@@ -1,19 +1,23 @@
 // On-model photos kept in /public/shoot, keyed by product id.
 // Shop tiles show these ahead of the product's own photos: the first by default, the second on hover.
 // Each photo is exported at several widths by scripts/make-shots.mjs, up to its full resolution,
-// and the browser picks the sharpest one the screen can use.
+// and the browser picks the smallest one that is still sharp on the screen in front of it.
+import placeholders from "./shotPlaceholders.json";
+
 export interface ModelShot {
     name: string;
     widths: number[];
+    /** Tiny blurred preview (a data URI) to show while the real photo downloads. */
+    placeholder?: string;
 }
 
-const WIDTHS = [800, 1400, 2400, 3392];
+const WIDTHS = [480, 800, 1400, 2400, 3392];
+const PLACEHOLDERS: Record<string, string> = placeholders;
+
+const shot = (name: string): ModelShot => ({ name, widths: WIDTHS, placeholder: PLACEHOLDERS[name] });
 
 /** The two poses of one product: `<name>-1` shows by default, `<name>-2` on hover. */
-const poses = (name: string): ModelShot[] => [
-    { name: `${name}-1`, widths: WIDTHS },
-    { name: `${name}-2`, widths: WIDTHS },
-];
+const poses = (name: string): ModelShot[] => [shot(`${name}-1`), shot(`${name}-2`)];
 
 export const MODEL_SHOTS: Record<string, ModelShot[]> = {
     "8e7bed4e-e891-4ce3-bb9e-7e22da238759": poses("white-tee"), // The White Tee
@@ -24,9 +28,9 @@ export const MODEL_SHOTS: Record<string, ModelShot[]> = {
     "06493a41-752d-4680-9585-89d8b58e4c9f": poses("dragon-flair"), // The Dragon Flair
 };
 
-const shotFile = (shot: ModelShot, width: number) => `/shoot/${shot.name}-${width}.webp`;
+const shotFile = (s: ModelShot, width: number) => `/shoot/${s.name}-${width}.webp`;
 
 /** Fallback source for browsers that ignore srcset. */
-export const shotSrc = (shot: ModelShot) => shotFile(shot, shot.widths[Math.min(1, shot.widths.length - 1)]);
+export const shotSrc = (s: ModelShot) => shotFile(s, s.widths.find((w) => w >= 800) ?? s.widths[0]);
 
-export const shotSrcSet = (shot: ModelShot) => shot.widths.map((w) => `${shotFile(shot, w)} ${w}w`).join(", ");
+export const shotSrcSet = (s: ModelShot) => s.widths.map((w) => `${shotFile(s, w)} ${w}w`).join(", ");

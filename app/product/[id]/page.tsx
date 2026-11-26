@@ -107,8 +107,12 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
     const hasShots = !!MODEL_SHOTS[id]?.length;
     const gallery = useMemo(
         () => [
-            ...(MODEL_SHOTS[id] ?? []).map((shot) => ({ src: shotSrc(shot), srcSet: shotSrcSet(shot) as string | undefined })),
-            ...productImages.map((src) => ({ src, srcSet: undefined as string | undefined })),
+            ...(MODEL_SHOTS[id] ?? []).map((shot) => ({
+                src: shotSrc(shot),
+                srcSet: shotSrcSet(shot) as string | undefined,
+                placeholder: shot.placeholder,
+            })),
+            ...productImages.map((src) => ({ src, srcSet: undefined as string | undefined, placeholder: undefined as string | undefined })),
         ],
         [id, productImages]
     );
@@ -296,7 +300,13 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                 <>
                                     {hasShots ? (
                                         /* Tall 2:3 frame, the shape of the model photos */
-                                        <div className="relative mb-6 aspect-[2/3] w-full max-w-[520px] overflow-hidden bg-[#f1f1f1] lg:h-[min(780px,calc(100vh-240px))] lg:min-h-[480px] lg:w-auto lg:max-w-none">
+                                        <div className="relative mb-6 aspect-[2/3] w-full max-w-[520px] overflow-hidden bg-[#f1f1f1] bg-cover bg-center lg:h-[min(780px,calc(100vh-240px))] lg:min-h-[480px] lg:w-auto lg:max-w-none"
+                                            style={
+                                                gallery[currentImageIndex].placeholder
+                                                    ? { backgroundImage: `url(${gallery[currentImageIndex].placeholder})` }
+                                                    : undefined
+                                            }
+                                        >
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 key={gallery[currentImageIndex].src}
@@ -304,6 +314,8 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                                                 srcSet={gallery[currentImageIndex].srcSet}
                                                 sizes={gallery[currentImageIndex].srcSet ? "(min-width: 1024px) 520px, 100vw" : undefined}
                                                 alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                                fetchPriority="high"
+                                                decoding="async"
                                                 className="h-full w-full object-cover pointer-events-none"
                                             />
                                         </div>

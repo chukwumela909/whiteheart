@@ -76,6 +76,11 @@ function ShopContent() {
     const [inStockOnly, setInStockOnly] = useState(false);
     // "dense" is 4 across on desktop and 2 on phones; "large" is 2 and 1.
     const [density, setDensity] = useState<"dense" | "large">("dense");
+    // Hover photos: which tiles the pointer has reached (start downloading) and which have finished
+    const [hoverArmed, setHoverArmed] = useState<Set<string>>(new Set());
+    const [hoverReady, setHoverReady] = useState<Set<string>>(new Set());
+    const armHover = (id: string) => setHoverArmed((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+    const markHoverReady = (id: string) => setHoverReady((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
     const sortRef = useRef<HTMLDivElement>(null);
 
     const supabase = createClient();
@@ -447,7 +452,7 @@ function ShopContent() {
                         </div>
                     ) : (
                         <ul className={`grid gap-x-[5px] gap-y-10 md:gap-x-[7px] md:gap-y-14 ${gridClass}`}>
-                            {pageProducts.map((product) => {
+                            {pageProducts.map((product, index) => {
                                 const shots = MODEL_SHOTS[product.id];
                                 const imageUrl = shots?.[0] ? shotSrc(shots[0]) : product.images?.[0] || product.image_url;
                                 const secondImageUrl = shots?.[1] ? shotSrc(shots[1]) : product.images?.[1];
@@ -456,8 +461,20 @@ function ShopContent() {
 
                                 return (
                                     <li key={product.id}>
-                                        <Link href={`/product/${product.id}`} className="group block">
-                                            <div className="relative aspect-[2/3] overflow-hidden bg-[#f1f1f1]">
+                                        <Link
+                                            href={`/product/${product.id}`}
+                                            className="group block"
+                                            onPointerEnter={() => armHover(product.id)}
+                                            onFocus={() => armHover(product.id)}
+                                        >
+                                            <div
+                                                className="relative aspect-[2/3] overflow-hidden bg-[#f1f1f1] bg-cover bg-center"
+                                                style={
+                                                    shots?.[0]?.placeholder
+                                                        ? { backgroundImage: `url(${shots[0].placeholder})` }
+                                                        : undefined
+                                                }
+                                            >
                                                 {imageUrl ? (
                                                     <>
                                                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -466,22 +483,25 @@ function ShopContent() {
                                                             srcSet={shots?.[0] ? shotSrcSet(shots[0]) : undefined}
                                                             sizes={shots?.[0] ? tileSizes : undefined}
                                                             alt={product.name.trim()}
-                                                            loading="lazy"
+                                                            loading={index < 4 ? "eager" : "lazy"}
+                                                            fetchPriority={index < 4 ? "high" : "auto"}
                                                             decoding="async"
-                                                            className={`h-full w-full object-cover transition-opacity duration-300 ${
-                                                                secondImageUrl ? "group-hover:opacity-0" : ""
-                                                            }`}
+                                                            className="h-full w-full object-cover"
                                                         />
-                                                        {secondImageUrl && (
+                                                        {/* The hover photo is only downloaded once the pointer reaches the tile,
+                                                            and only shown once it has fully arrived */}
+                                                        {secondImageUrl && hoverArmed.has(product.id) && (
                                                             /* eslint-disable-next-line @next/next/no-img-element */
                                                             <img
                                                                 src={secondImageUrl}
                                                                 srcSet={shots?.[1] ? shotSrcSet(shots[1]) : undefined}
                                                                 sizes={shots?.[1] ? tileSizes : undefined}
                                                                 alt=""
-                                                                loading="lazy"
                                                                 decoding="async"
-                                                                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                                                onLoad={() => markHoverReady(product.id)}
+                                                                className={`absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 ${
+                                                                    hoverReady.has(product.id) ? "group-hover:opacity-100" : ""
+                                                                }`}
                                                             />
                                                         )}
                                                     </>
