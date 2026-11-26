@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
-import Footer from "@/app/components/Footer";
+import LandingFooter from "@/app/components/LandingFooter";
 import { GROTESK_PRELOAD, grotesk } from "@/app/components/landingFonts";
 import { categoryKey, matchesCategory } from "@/lib/categories";
 import { isSoldOut } from "@/lib/stock";
@@ -637,7 +637,7 @@ function ShopContent() {
                 </div>
             </main>
 
-            <Footer />
+            <LandingFooter />
 
             {/* Filter drawer */}
             <div
