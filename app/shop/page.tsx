@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
-import { grotesk } from "@/app/components/landingFonts";
+import { GROTESK_PRELOAD, grotesk } from "@/app/components/landingFonts";
 import { categoryKey, matchesCategory } from "@/lib/categories";
 import { isSoldOut } from "@/lib/stock";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
@@ -263,6 +263,7 @@ function ShopContent() {
 
     return (
         <div className={`${grotesk.className} bg-white text-[#252525]`}>
+            <link rel="preload" href={GROTESK_PRELOAD} as="font" type="font/woff2" crossOrigin="anonymous" />
             <div className="sticky top-0 z-40">
                 <Navbar variant="shop" />
             </div>

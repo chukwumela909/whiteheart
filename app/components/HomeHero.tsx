@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { grotesk, serif } from "./landingFonts";
+import { GROTESK_PRELOAD, grotesk, serif } from "./landingFonts";
 import heroPlaceholders from "@/lib/heroPlaceholders.json";
 
 // Each hero image is exported at these widths (WebP); the browser picks the one that fits the screen.
@@ -68,12 +68,18 @@ export default function HomeHero() {
     // Only the opening image downloads with the page. The other slides start once it has arrived,
     // so they never compete with it on a slow connection.
     const [restReady, setRestReady] = useState(false);
-    const firstImage = useRef<HTMLImageElement | null>(null);
     useEffect(() => {
-        if (firstImage.current?.complete) setRestReady(true);
         const fallback = setTimeout(() => setRestReady(true), 5000);
         return () => clearTimeout(fallback);
     }, []);
+
+    // Which slide images have finished downloading. The slider never moves on to a slide
+    // whose image has not arrived, so a slow connection shows a finished photo, not a gap.
+    const [loaded, setLoaded] = useState<ReadonlySet<number>>(new Set());
+    const markLoaded = (i: number) => {
+        setLoaded((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
+        if (i === 0) setRestReady(true);
+    };
 
     useEffect(() => {
         reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -81,9 +87,12 @@ export default function HomeHero() {
 
     useEffect(() => {
         if (paused || reducedMotion.current) return;
-        const timer = setTimeout(() => goTo((i) => (i + 1) % SLIDES.length), INTERVAL_MS);
+        const next = (active + 1) % SLIDES.length;
+        // Wait for the next image; this effect runs again as soon as it lands.
+        if (!loaded.has(next)) return;
+        const timer = setTimeout(() => goTo(next), INTERVAL_MS);
         return () => clearTimeout(timer);
-    }, [active, paused]);
+    }, [active, paused, loaded]);
 
     const slide = SLIDES[active];
 
@@ -115,6 +124,7 @@ export default function HomeHero() {
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
         >
+            <link rel="preload" href={GROTESK_PRELOAD} as="font" type="font/woff2" crossOrigin="anonymous" />
             {/* Images: the new slide drops down from the top over the old one. Clipped in their own box so the zoom never makes the hero scrollable. */}
             <div
                 className="absolute inset-0 isolate overflow-clip bg-cover"
@@ -128,8 +138,11 @@ export default function HomeHero() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                     key={s.image}
-                    ref={i === 0 ? firstImage : undefined}
-                    onLoad={i === 0 ? () => setRestReady(true) : undefined}
+                    // An image served from the browser's cache can finish before React attaches onLoad
+                    ref={(el) => {
+                        if (el?.complete && el.naturalWidth > 0) markLoaded(i);
+                    }}
+                    onLoad={() => markLoaded(i)}
                     src={`${s.image}-1280.webp`}
                     srcSet={heroSrcSet(s.image)}
                     sizes="100vw"

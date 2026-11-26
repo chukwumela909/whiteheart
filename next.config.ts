@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/shoot/:path*", headers: [cacheControl] },
       { source: "/landing/:path*", headers: [cacheControl] },
+      // Font files never change under the same name
+      { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
     ];
   },
 };
