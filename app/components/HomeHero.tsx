@@ -24,7 +24,7 @@ type Slide = {
 // Reorder this list to change which image opens the page.
 const SLIDES: Slide[] = [
     {
-        image: "/landing/hero-street-a",
+        image: "/landing/hero-street-a2",
         alt: "Two friends walking down a city street, one in the Whiteheart cream and red cap, the other in the hands-and-heart beanie",
         title: "Shop now",
         lines: ["Caps, beanies and sets", "straight off the line"],
@@ -40,7 +40,7 @@ const SLIDES: Slide[] = [
         focus: "77% 60%",
     },
     {
-        image: "/landing/hero-street-b",
+        image: "/landing/hero-street-b2",
         alt: "Two friends laughing as they walk past a shopfront, wearing the Whiteheart cap and beanie",
         title: "Community",
         lines: ["New pieces land on", "our socials first"],
