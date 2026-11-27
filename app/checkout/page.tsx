@@ -285,7 +285,7 @@ export default function CheckoutPage() {
     }
 
     const subtotal = getCartTotal();
-    const shipping = 0; // Free shipping
+    const shipping = 0; // Delivery is not charged on the site yet; the fee depends on where the order goes
     const total = subtotal + shipping;
 
     return (
@@ -570,7 +570,7 @@ export default function CheckoutPage() {
 
                     {/* Right Column - Order Summary */}
                     <div>
-                        <div className="bg-white rounded-lg p-6 sticky top-[108px] md:top-[132px]">
+                        <div className="bg-white rounded-lg p-6 sticky top-20 md:top-[104px]">
                             <h2 className="text-xl font-walter font-bold text-black mb-6">Order Summary</h2>
 
                             {/* Cart Items */}
@@ -616,8 +616,8 @@ export default function CheckoutPage() {
                                     <span className="text-black">₦{subtotal.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between font-simon text-sm">
-                                    <span className="text-gray-600">Shipping</span>
-                                    <span className="text-green-600">Free</span>
+                                    <span className="text-gray-600">Delivery</span>
+                                    <span className="text-gray-600">Not included</span>
                                 </div>
                                 <div className="flex justify-between font-walter font-bold text-lg pt-2 border-t border-gray-200">
                                     <span className="text-black">Total</span>

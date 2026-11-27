@@ -246,7 +246,7 @@ export default function Navbar({ transparent = false, variant = "default" }: Nav
                                     <span className="font-dancing font-bold text-xl">₦{getCartTotal().toLocaleString()}</span>
                                 </div>
                                 <p className="text-xs font-simon text-gray-600">
-                                    Taxes and shipping calculated at checkout
+                                    Delivery is not included in this total
                                 </p>
                                 <button
                                     onClick={() => {
@@ -268,20 +268,6 @@ export default function Navbar({ transparent = false, variant = "default" }: Nav
                     )}
                 </div>
             </div>
-
-            {!transparent && !isHero && !isShop && (
-                <div className="bg-black text-white text-center py-1 text-xs font-medium tracking-wider w-full">
-                    FREE DELIVERY ON EVERY ORDER
-                </div>
-            )}
-
-            {isShop && (
-                <div
-                    className={`${grotesk.className} flex h-7 w-full items-center justify-center bg-[#fc0420] px-3 text-center text-[11px] font-bold uppercase tracking-[0.08em] text-white`}
-                >
-                    Free delivery on every order
-                </div>
-            )}
 
             {isHero || isShop ? (
                 <>

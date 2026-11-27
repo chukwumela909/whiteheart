@@ -296,18 +296,8 @@ function ShopContent() {
                     })}
                 </div>
 
-                {/* Offer band */}
-                <div className="flex min-h-[84px] flex-col items-center justify-center bg-[#fc0420] px-4 py-4 text-center text-white md:min-h-[103px]">
-                    <p className="text-2xl font-bold uppercase leading-none tracking-[0.01em] md:text-[2rem]">
-                        Free delivery
-                    </p>
-                    <p className="mt-1 text-sm font-bold uppercase leading-tight tracking-[0.03em] md:text-lg">
-                        On every order
-                    </p>
-                </div>
-
                 {/* Toolbar: layout switch, filter, sort */}
-                <div className="sticky top-[92px] z-30 flex h-14 items-center justify-between bg-white px-4 md:top-[116px] md:px-[42px]">
+                <div className="sticky top-16 z-30 flex h-14 items-center justify-between bg-white px-4 md:top-[88px] md:px-[42px]">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1" role="group" aria-label="Grid layout">
                             <button
@@ -632,7 +622,7 @@ function ShopContent() {
                 <div className="px-4 pb-12 md:px-[42px] md:pb-14">
                     <h2 className="text-lg font-medium uppercase leading-snug tracking-[0.07em]">{title}</h2>
                     <p className="mt-4 max-w-[1320px] text-sm leading-relaxed tracking-[0.06em]">
-                        Every Whiteheart piece in one place. Delivery is free on every order.
+                        Every Whiteheart piece in one place.
                     </p>
                 </div>
             </main>

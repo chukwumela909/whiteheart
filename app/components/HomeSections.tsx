@@ -346,13 +346,13 @@ function DeliveryNote() {
                 <p className={`${serif.className} text-[clamp(1.05rem,1.35vw,1.5rem)] uppercase leading-[1.1] tracking-[0.02em]`}>
                     WH©{new Date().getFullYear()}
                     <br />
-                    Free delivery on every order
+                    Delivery and returns
                 </p>
                 <div className={`${LABEL} mt-7 grid grid-cols-4 items-start gap-x-2.5 text-[#4a4a4a]`}>
                     <p className="col-span-2 text-left md:col-span-1 md:text-center">Port Harcourt</p>
                     <p className="order-last col-span-4 mx-auto mt-6 max-w-[46ch] md:order-none md:col-span-2 md:mt-0">
-                        Delivery is free on every order, straight to your door. Return unused items with their tags
-                        within 14 days of delivery.
+                        Orders ship from Port Harcourt, and the delivery fee depends on where you are. Return unused
+                        items with their tags within 14 days of delivery.
                     </p>
                     <p className="col-span-2 text-right md:col-span-1 md:text-center">Nigeria</p>
                 </div>
