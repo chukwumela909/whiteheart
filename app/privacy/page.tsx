@@ -1,11 +1,12 @@
 "use client";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import LandingFooter from "../components/LandingFooter";
 import { GROTESK_PRELOAD } from "../components/landingFonts";
 
 export default function PrivacyPolicy() {
     return (
-        <>
+        // White page like the shop and product pages (the site background turns grey for dark-mode visitors)
+        <div className="bg-white">
             {/* Same black header as the shop page; it stays in view while the page scrolls */}
             <link rel="preload" href={GROTESK_PRELOAD} as="font" type="font/woff2" crossOrigin="anonymous" />
             <div className="sticky top-0 z-40">
@@ -271,7 +272,7 @@ export default function PrivacyPolicy() {
                     </p>
                 </section>
             </div>
-            <Footer />
-        </>
+            <LandingFooter />
+        </div>
     );
 }
