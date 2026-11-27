@@ -24,7 +24,7 @@ export const MODEL_SHOTS: Record<string, ModelShot[]> = {
     "75fdb755-9803-4470-8ac8-b65760bf1ad1": poses("simplicity"), // Simplicity 2.0
     "574cd0fc-37b3-4d79-826c-bf96ed4fe650": poses("wrap"), // The White Wrap
     "723ed219-f0d1-48bf-8f86-1cc7dc662d80": poses("vinsic"), // The Vinsic
-    "d3b8c8b2-993f-4d5b-b230-5a53f2ec8dd8": poses("track-suit"), // The 2Track Suit
+    "d3b8c8b2-993f-4d5b-b230-5a53f2ec8dd8": poses("track-suit-b"), // The 2Track Suit (ankle zips removed 2026-11-27)
     "06493a41-752d-4680-9585-89d8b58e4c9f": poses("dragon-flair"), // The Dragon Flair
 };
 
