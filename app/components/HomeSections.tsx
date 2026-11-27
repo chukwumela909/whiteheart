@@ -1,13 +1,14 @@
 "use client";
 
 // Everything on the homepage between the hero and the footer:
-// manifesto, featured products, three entry tiles, delivery note, lookbook strip, socials.
+// manifesto, featured products, three entry tiles, zip-off trousers, delivery note, lookbook strip, socials.
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { grotesk, serif } from "./landingFonts";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
 import { originalOnError, resized, resizedSet } from "@/lib/img";
 import { isSoldOut } from "@/lib/stock";
+import ZipOffFeature from "./ZipOffFeature";
 
 export interface HomeProduct {
     id: string;
@@ -486,6 +487,7 @@ export default function HomeSections({ products, loading }: { products: HomeProd
             <Manifesto />
             <FeaturedProducts products={products} loading={loading} />
             <EntryTiles />
+            <ZipOffFeature />
             <DeliveryNote />
             <Lookbook />
             <Community />

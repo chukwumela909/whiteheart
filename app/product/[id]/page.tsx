@@ -5,7 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import Navbar from "../../components/Navbar";
-import { GROTESK_PRELOAD } from "../../components/landingFonts";
+import { GROTESK_PRELOAD, grotesk } from "../../components/landingFonts";
+import ZipOffFeature, { TRACKSUIT_ID } from "../../components/ZipOffFeature";
 import LandingFooter from "../../components/LandingFooter";
 import { availableQuantity, isSoldOut } from "@/lib/stock";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
@@ -537,6 +538,13 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                     </div>
                 </div>
             </div>
+
+            {/* The tracksuit trousers zip off at the knee; show how */}
+            {product.id === TRACKSUIT_ID && (
+                <div className={`${grotesk.className} mt-16 border-t border-black/10 pt-16 text-black md:mt-24 md:pt-24`}>
+                    <ZipOffFeature shopLink={false} />
+                </div>
+            )}
 
             <LandingFooter />
                 </>
