@@ -55,7 +55,7 @@ interface SavedAddress {
 
 export default function CheckoutPage() {
     const router = useRouter();
-    const { cart, getCartTotal } = useCart();
+    const { cart, isLoaded: cartLoaded, getCartTotal } = useCart();
     const { showError } = useNotification();
     const supabase = createClient();
     
@@ -125,12 +125,13 @@ export default function CheckoutPage() {
         setUseNewAddress(false);
     };
 
-    // Redirect if cart is empty
+    // Redirect if the bag is empty, but only once the saved bag has been read:
+    // on a direct visit or a refresh the bag looks empty for a moment first.
     useEffect(() => {
-        if (cart.length === 0) {
+        if (cartLoaded && cart.length === 0) {
             router.push("/shop");
         }
-    }, [cart, router]);
+    }, [cart, cartLoaded, router]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -279,7 +280,8 @@ export default function CheckoutPage() {
     };
 
     if (cart.length === 0) {
-        return null; // Will redirect
+        // Still reading the saved bag, or about to redirect to the shop
+        return <div className="min-h-screen bg-gray-50" />;
     }
 
     const subtotal = getCartTotal();

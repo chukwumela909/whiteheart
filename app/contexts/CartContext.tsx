@@ -15,6 +15,8 @@ export interface CartItem {
 
 interface CartContextType {
     cart: CartItem[];
+    /** False until the saved bag has been read from the browser; the bag looks empty before that. */
+    isLoaded: boolean;
     addToCart: (item: Omit<CartItem, "id" | "quantity">) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, quantity: number) => void;
@@ -109,6 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         <CartContext.Provider
             value={{
                 cart,
+                isLoaded,
                 addToCart,
                 removeFromCart,
                 updateQuantity,
