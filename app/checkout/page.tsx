@@ -10,7 +10,9 @@ import {
     getErrorMessage,
     isNetworkError,
 } from "@/lib/errors";
-import BrandLogo from "@/app/components/BrandLogo";
+import Navbar from "@/app/components/Navbar";
+import LandingFooter from "@/app/components/LandingFooter";
+import { GROTESK_PRELOAD } from "@/app/components/landingFonts";
 import Link from "next/link";
 import { originalOnError, resized } from "@/lib/img";
 
@@ -286,16 +288,10 @@ export default function CheckoutPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                            <BrandLogo
-                                href="/"
-                                className="w-[190px] h-[72px]"
-                                imageClassName="object-contain"
-                                alt="Whiteheart logo"
-                            />
-                </div>
+            {/* Same black header as the shop page; it stays in view while the page scrolls */}
+            <link rel="preload" href={GROTESK_PRELOAD} as="font" type="font/woff2" crossOrigin="anonymous" />
+            <div className="sticky top-0 z-40">
+                <Navbar variant="shop" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -572,7 +568,7 @@ export default function CheckoutPage() {
 
                     {/* Right Column - Order Summary */}
                     <div>
-                        <div className="bg-white rounded-lg p-6 sticky top-4">
+                        <div className="bg-white rounded-lg p-6 sticky top-[108px] md:top-[132px]">
                             <h2 className="text-xl font-walter font-bold text-black mb-6">Order Summary</h2>
 
                             {/* Cart Items */}
@@ -651,6 +647,8 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             </div>
+
+            <LandingFooter />
         </div>
     );
 }
