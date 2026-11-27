@@ -1,11 +1,16 @@
 "use client";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { GROTESK_PRELOAD } from "../components/landingFonts";
 
 export default function TermsAndConditions() {
     return (
         <>
-            <Navbar />
+            {/* Same black header as the shop page; it stays in view while the page scrolls */}
+            <link rel="preload" href={GROTESK_PRELOAD} as="font" type="font/woff2" crossOrigin="anonymous" />
+            <div className="sticky top-0 z-40">
+                <Navbar variant="shop" />
+            </div>
             <div className="max-w-5xl mx-auto px-8 md:px-12 py-16">
                 <h1 className="font-bold text-4xl mb-2">GENERAL CONDITIONS FOR ONLINE SALES</h1>
                 <p className="text-lg mb-12">Effective Date: October 26th, 2025</p>

@@ -6,7 +6,7 @@ import { useCart } from "@/app/contexts/CartContext";
 import { useNotification } from "@/app/contexts/NotificationContext";
 import Navbar from "../../components/Navbar";
 import { GROTESK_PRELOAD } from "../../components/landingFonts";
-import Footer from "../../components/Footer";
+import LandingFooter from "../../components/LandingFooter";
 import { availableQuantity, isSoldOut } from "@/lib/stock";
 import { MODEL_SHOTS, shotSrc, shotSrcSet } from "@/lib/modelShots";
 import { originalOnError, resized, resizedSet } from "@/lib/img";
@@ -538,7 +538,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                 </div>
             </div>
 
-            <Footer />
+            <LandingFooter />
                 </>
             )}
         </div>
